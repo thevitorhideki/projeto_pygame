@@ -19,21 +19,30 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom = ("""posição do personagem"""))
         self.gravity = 0
         self.keys = pygame.key.get_pressed()
+        self.frame_jump_counter = 0
+        self.jump_bool = False
+
+    def glide(self):
+        if self.jump_bool:
+            self.frame_jump_counter += 1
     
     def jump(self):
         if self.keys[pygame.K_SPACE] and self.rect.bottom >= 300:
             self.gravity = -20
+            self.jump_bool = True
     
     def apply_gravity(self):
         # Gliding
-        if self.keys[pygame.K_SPACE] and self.rect.bottom < 300:
-            self.gravity += 0.2
+        if self.keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
+            self.gravity = 2
         # Falling
         else: 
             self.gravity += 1
         self.rect.y += self.gravity
         if self.rect.bottom >= 300:
             self.rect.bottom = 300
+            self.jump_bool = False
+            self.frame_jump_counter = 0
     
     def animation_state(self):
         if self.rect.bottom < 300:
@@ -48,6 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.jump()
         self.apply_gravity()
         self.animation_state()
+        self.glide()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Bread and Fred")
