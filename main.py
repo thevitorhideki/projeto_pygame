@@ -11,13 +11,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         player_1 = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        player_1 = pygame.transform.scale2x(player_1)
+        player_1 = pygame.transform.scale(player_1, (96,96))
         player_2 = pygame.image.load('assets/cidade/player2.png').convert_alpha()
-        player_2 = pygame.transform.scale2x(player_2)
+        player_2 = pygame.transform.scale(player_2, (96,96))
         self.player_walk = [player_1, player_2]
         self.player_index = 0
         self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        self.player_jump = pygame.transform.scale2x(self.player_jump)
+        self.player_jump = pygame.transform.scale(self.player_jump, (96,96))
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom = (100,500))
@@ -73,8 +73,11 @@ class Platforms(pygame.sprite.Sprite):
         if self.rect.x <= -300:
             self.kill()
 
+    def movement(self):
+        self.rect.x -= 4
+
     def update(self):
-        self.rect.x -= 6
+        self.movement()
         self.destroy()
 
 class Obstacles:
@@ -85,8 +88,8 @@ class Obstacles:
     def update(self):
         pass
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-pygame.display.set_caption("Pog Runner")
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Evolution Run")
 clock = pygame.time.Clock()
 font = pygame.font.Font('font/Pixeltype.ttf', 50)
 
@@ -135,6 +138,9 @@ while True:
         player.update()
         platforms.draw(screen)
         platforms.update()
+        player_platform_collision = pygame.sprite.spritecollide(player.sprite, platforms, False)
+        if player_platform_collision:
+            player.sprite.rect.bottom = player_platform_collision[0].rect.top
 
     pygame.display.update()
     clock.tick(60)
