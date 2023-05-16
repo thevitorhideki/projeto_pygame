@@ -34,21 +34,24 @@ class Player(pygame.sprite.Sprite):
             self.gravity = -20
             self.jump_bool = True
     
-    def apply_gravity(self):
-        # Gliding
-        if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
-            self.gravity = 2
-        # Falling
-        else: 
-            self.gravity += 1
-        self.rect.y += self.gravity
-        if self.rect.bottom >= 500:
-            self.rect.bottom = 500
-            self.jump_bool = False
-            self.frame_jump_counter = 0
+    def apply_gravity(self, player_platform_collision):
+        if player_platform_collision:
+            self.rect.bottom = player_platform_collision[0].rect.top
+        else:
+            # Gliding
+            if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
+                self.gravity = 2
+            # Falling
+            else: 
+                self.gravity += 1
+            self.rect.y += self.gravity
+            if self.rect.bottom >= 500:
+                self.rect.bottom = 500
+                self.jump_bool = False
+                self.frame_jump_counter = 0        
     
-    def animation_state(self):
-        if self.rect.bottom < 500:
+    def animation_state(self, player_platform_collision):
+        if self.rect.bottom < 500 and not player_platform_collision:
             self.image = self.player_jump
         else:
             self.player_index += 0.1
@@ -56,10 +59,10 @@ class Player(pygame.sprite.Sprite):
                 self.player_index = 0
             self.image = self.player_walk[int(self.player_index)]
     
-    def update(self):
+    def update(self, player_platform_collision):
         self.jump()
-        self.apply_gravity()
-        self.animation_state()
+        self.apply_gravity(player_platform_collision)
+        self.animation_state(player_platform_collision)
         self.glide()
 
 class Platforms(pygame.sprite.Sprite):
@@ -133,14 +136,13 @@ while True:
     background_rect.x -= 4
     background2_rect.x -= 4
 
-    if playing:            
+    if playing:
+        player_platform_collision = pygame.sprite.spritecollide(player.sprite, platforms, False) 
         player.draw(screen)
-        player.update()
+        player.update(player_platform_collision)
         platforms.draw(screen)
         platforms.update()
-        player_platform_collision = pygame.sprite.spritecollide(player.sprite, platforms, False)
-        if player_platform_collision:
-            player.sprite.rect.bottom = player_platform_collision[0].rect.top
+        
 
     pygame.display.update()
     clock.tick(60)
