@@ -4,60 +4,66 @@ from random import randint
 
 pygame.init()
 
+# Window size
 WIDTH = 800
 HEIGHT = 600
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        # Load player sprites and scale
         player_1 = pygame.image.load('assets/cidade/player1.png').convert_alpha()
         player_1 = pygame.transform.scale(player_1, (96,96))
         player_2 = pygame.image.load('assets/cidade/player2.png').convert_alpha()
         player_2 = pygame.transform.scale(player_2, (96,96))
+        
+        # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
         self.player_index = 0
-        self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        self.player_jump = pygame.transform.scale(self.player_jump, (96,96))
-
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom = (100,500))
+        
+        # Load player jump sprite and scale
+        self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
+        self.player_jump = pygame.transform.scale(self.player_jump, (96,96))
+        
         self.gravity = 0
         self.frame_jump_counter = 0
         self.jump_bool = False
 
     def glide(self):
+        # Verify if player is jumping and if it is, count the frames
         if self.jump_bool:
             self.frame_jump_counter += 1
     
     def jump(self):
+        # Verify if player press space and if it is, jump
         if keys[pygame.K_SPACE] and self.rect.bottom >= 500:
             self.gravity = -20
             self.jump_bool = True
     
-    def apply_gravity(self, player_platform_collision):
-        if player_platform_collision:
-            self.rect.bottom = player_platform_collision[0].rect.top
-        else:
-            # Gliding
-            if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
-                self.gravity = 2
-            # Falling
-            else: 
-                self.gravity += 1
-            self.rect.y += self.gravity
-            if self.rect.bottom >= 500:
-                self.rect.bottom = 500
-                self.jump_bool = False
-                self.frame_jump_counter = 0        
+    def apply_gravity(self):
+        # If player is gliding, apply gravity of 2
+        if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
+            self.gravity = 2
+        # If player is jumping, add 1 to gravity every frame
+        else: 
+            self.gravity += 1
+            
+        self.rect.y += self.gravity
+        if self.rect.bottom >= 500: # change
+            self.rect.bottom = 500
+            self.jump_bool = False
+            self.frame_jump_counter = 0
     
-    def animation_state(self, player_platform_collision):
-        if self.rect.bottom < 500 and not player_platform_collision:
+    def animation_state(self):
+        # If player is jumping, change sprite to jump sprite
+        if self.rect.bottom < 500:
             self.image = self.player_jump
         else:
+            # If player is walking, change sprite to walking sprites
             self.player_index += 0.1
-            if self.player_index > len(self.player_walk):
-                self.player_index = 0
-            self.image = self.player_walk[int(self.player_index)]
+            self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
     
     def update(self, player_platform_collision):
         self.jump()
@@ -68,15 +74,20 @@ class Player(pygame.sprite.Sprite):
 class Platforms(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        plataform = pygame.image.load('assets/cidade/plataforma.png').convert_alpha()
-        self.image = plataform
+        # Load platform sprite
+        city_platform = pygame.image.load('assets/cidade/platform.png').convert_alpha()
+        self.image = city_platform
+        
+        # Positioning the platform sprite on a random y axis
         self.rect = self.image.get_rect(center = (900, randint(350,450)))
 
     def destroy(self):
+        # Destroy platform if it goes off screen
         if self.rect.x <= -300:
             self.kill()
 
     def movement(self):
+        # Move platform to the left
         self.rect.x -= 4
 
     def update(self):
@@ -125,6 +136,7 @@ while True:
         if event.type == platform_timer:
             platforms.add(Platforms())
     
+    # Infinite background logic
     screen.blit(background, background_rect)
     screen.blit(background2, background2_rect)
 
