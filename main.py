@@ -13,23 +13,32 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         # Load player sprites and scale
         player_1 = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        player_1 = pygame.transform.scale(player_1, (96,96))
         player_2 = pygame.image.load('assets/cidade/player2.png').convert_alpha()
-        player_2 = pygame.transform.scale(player_2, (96,96))
         
         # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
         self.player_index = 0
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom = (100,500))
+        self.rect = self.image.get_rect(midbottom = (100,501))
         
         # Load player jump sprite and scale
-        self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        self.player_jump = pygame.transform.scale(self.player_jump, (96,96))
+        # self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
         
         self.gravity = 0
         self.frame_jump_counter = 0
         self.jump_bool = False
+
+    def isCollidingPlatform(self, platforms):
+        for platform in platforms: 
+            if self.rect.colliderect(platform.rect):
+                return True
+        return False
+    
+    def isCollidingGround(self, ground):
+        for g in ground:
+            if self.rect.colliderect(g.rect):
+                return True
+        return False
 
     def glide(self):
         # Verify if player is jumping and if it is, count the frames
@@ -38,7 +47,7 @@ class Player(pygame.sprite.Sprite):
     
     def jump(self):
         # Verify if player press space and if it is, jump
-        if keys[pygame.K_SPACE] and self.rect.bottom >= 500:
+        if keys[pygame.K_SPACE] and (self.isCollidingPlatform(platforms) or self.isCollidingGround(ground)):
             self.gravity = -20
             self.jump_bool = True
     
@@ -51,24 +60,33 @@ class Player(pygame.sprite.Sprite):
             self.gravity += 1
             
         self.rect.y += self.gravity
-        if self.rect.bottom >= 500: # change
-            self.rect.bottom = 500
-            self.jump_bool = False
-            self.frame_jump_counter = 0
+        if self.isCollidingPlatform(platforms):
+            for platform in platforms:
+                if self.rect.bottom >= platform.rect.top + 1:
+                    self.rect.bottom = platform.rect.top + 1 
+                    self.gravity = 0
+                    self.jump_bool = False
+                    self.frame_jump_counter = 0
+        elif self.isCollidingGround(ground):
+            for g in ground:
+                if self.rect.bottom > g.rect.top + 1:
+                    self.rect.bottom = g.rect.top + 1 
+                    self.gravity = 0
+                    self.jump_bool = False
+                    self.frame_jump_counter = 0
     
     def animation_state(self):
-        # If player is jumping, change sprite to jump sprite
-        if self.rect.bottom < 500:
-            self.image = self.player_jump
-        else:
-            # If player is walking, change sprite to walking sprites
+        # If player is colliding with platform or ground, change sprite to walking animation
+        if self.isCollidingPlatform(platforms) or self.isCollidingGround(ground):
             self.player_index += 0.1
             self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
+        # else:
+        #     self.image = self.player_jump
     
-    def update(self, player_platform_collision):
+    def update(self):
         self.jump()
-        self.apply_gravity(player_platform_collision)
-        self.animation_state(player_platform_collision)
+        self.apply_gravity()
+        self.animation_state()
         self.glide()
 
 class Platforms(pygame.sprite.Sprite):
@@ -79,7 +97,7 @@ class Platforms(pygame.sprite.Sprite):
         self.image = city_platform
         
         # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(center = (900, randint(350,450)))
+        self.rect = self.image.get_rect(center = (900, randint(350,400)))
 
     def destroy(self):
         # Destroy platform if it goes off screen
@@ -101,6 +119,13 @@ class Obstacles:
     
     def update(self):
         pass
+    
+class Ground(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        ground = pygame.image.load('assets/cidade/ground.png').convert_alpha()
+        self.image = ground
+        self.rect = self.image.get_rect(center = (WIDTH/2, 550))
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Evolution Run")
@@ -109,13 +134,6 @@ font = pygame.font.Font('font/Pixeltype.ttf', 50)
 
 playing = True
 
-# Background
-background = pygame.image.load('assets/bg.png').convert()
-background2 = pygame.image.load('assets/bg2.jpg').convert()
-
-background_rect = background.get_rect(topleft=(0, 0))
-background2_rect = background2.get_rect(topleft=(background.get_width(), 0))
-
 # Player
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -123,9 +141,13 @@ player.add(Player())
 # Plataforms
 platforms = pygame.sprite.Group()
 
+# Ground
+ground = pygame.sprite.GroupSingle()
+ground.add(Ground())
+
 # Timers
 platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 2000)
+pygame.time.set_timer(platform_timer, 4000)
 
 while True:
     keys = pygame.key.get_pressed()
@@ -137,23 +159,22 @@ while True:
             platforms.add(Platforms())
     
     # Infinite background logic
-    screen.blit(background, background_rect)
-    screen.blit(background2, background2_rect)
+    screen.fill((146, 244, 255))
 
-    if background2_rect.topright[0] == WIDTH:
-        background_rect.x = WIDTH
-    elif background_rect.topright[0] == WIDTH:
-        background2_rect.x = WIDTH
+    # if background2_rect.topright[0] == WIDTH:
+    #     background_rect.x = WIDTH
+    # elif background_rect.topright[0] == WIDTH:
+    #     background2_rect.x = WIDTH
 
-    background_rect.x -= 4
-    background2_rect.x -= 4
+    # background_rect.x -= 4
+    # background2_rect.x -= 4
 
     if playing:
-        player_platform_collision = pygame.sprite.spritecollide(player.sprite, platforms, False) 
         player.draw(screen)
-        player.update(player_platform_collision)
+        player.update()
         platforms.draw(screen)
         platforms.update()
+        ground.draw(screen)
         
 
     pygame.display.update()
