@@ -29,9 +29,10 @@ class Player(pygame.sprite.Sprite):
         self.jump_bool = False
 
     def isCollidingPlatform(self, platforms):
-        for platform in platforms: 
-            if self.rect.colliderect(platform.rect):
-                return True
+        platforms_hit = pygame.sprite.spritecollide(self, platforms, False)
+        for platform in platforms_hit: 
+            if self.rect.colliderect(platform.rect): 
+                return platform
         return False
     
     def isCollidingGround(self, ground):
@@ -55,18 +56,23 @@ class Player(pygame.sprite.Sprite):
         # If player is gliding, apply gravity of 2
         if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
             self.gravity = 2
-        # If player is jumping, add 1 to gravity every frame
+        # If player is not jumping, add 1 to gravity every frame
         else: 
             self.gravity += 1
             
         self.rect.y += self.gravity
         if self.isCollidingPlatform(platforms):
-            for platform in platforms:
-                if self.rect.bottom >= platform.rect.top + 1:
-                    self.rect.bottom = platform.rect.top + 1 
-                    self.gravity = 0
-                    self.jump_bool = False
-                    self.frame_jump_counter = 0
+            platform = self.isCollidingPlatform(platforms)
+            if self.rect.bottom > platform.rect.top + 1:
+                self.rect.bottom = platform.rect.top + 1
+                self.jump_bool = False
+                self.frame_jump_counter = 0
+                self.gravity = 0
+            if self.rect.top < platform.rect.bottom + 1:
+                self.rect.top = platform.rect.bottom + 1 
+                self.frame_jump_counter = 0
+                self.jump_bool = False
+                self.gravity += 2
         elif self.isCollidingGround(ground):
             for g in ground:
                 if self.rect.bottom > g.rect.top + 1:
@@ -147,7 +153,7 @@ ground.add(Ground())
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 4000)
+pygame.time.set_timer(platform_timer, 2000)
 
 while True:
     keys = pygame.key.get_pressed()
