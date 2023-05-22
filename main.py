@@ -7,7 +7,6 @@ pygame.init()
 # Window size
 WIDTH = 800
 HEIGHT = 600
-GRAVITY = 1
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -25,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         # Load player jump sprite and scale
         # self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
         
+        self.gravity = 1
         self.speedy = 0
         self.jump_bool = False
 
@@ -48,12 +48,12 @@ class Player(pygame.sprite.Sprite):
             self.jump_bool = True
     
     def apply_gravity(self):
-        # If player is gliding, apply gravity of 2
-        # if keys[pygame.K_SPACE] and self.speedy < 0:
-        #     self.speedy += 1
-        # If player is not jumping, add 1 to gravity every frame
-    
-        self.speedy += GRAVITY
+        # If Player is jumping and the space key is pressed, apply gravity to the player.
+        if keys[pygame.K_SPACE] and self.speedy >= 0:
+            self.gravity = 0.1
+        else:
+            self.gravity = 1
+        self.speedy += self.gravity
         self.rect.y += self.speedy
         if self.isCollidingGround(ground):
             for g in ground:
@@ -84,6 +84,7 @@ class Player(pygame.sprite.Sprite):
         #     self.image = self.player_jump
     
     def update(self):
+        print(self.speedy)
         self.apply_gravity()
         self.jump()
         self.animation_state()
