@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from random import randint
+from classes import Rock
 
 pygame.init()
 
@@ -111,14 +112,6 @@ class Platforms(pygame.sprite.Sprite):
     def update(self):
         self.movement()
         self.destroy()
-
-class Obstacles:
-    def __init__(self):
-        super().__init__()
-        pass
-    
-    def update(self):
-        pass
     
 class Ground(pygame.sprite.Sprite):
     def __init__(self):
@@ -141,6 +134,9 @@ player.add(Player())
 # Plataforms
 platforms = pygame.sprite.Group()
 
+# Rock
+rocks = pygame.sprite.Group()
+
 # Ground
 ground = pygame.sprite.GroupSingle()
 ground.add(Ground())
@@ -148,6 +144,8 @@ ground.add(Ground())
 # Timers
 platform_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(platform_timer, 4000)
+rock_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(rock_timer, 1800)
 
 while True:
     keys = pygame.key.get_pressed()
@@ -157,6 +155,8 @@ while True:
             exit()
         if event.type == platform_timer:
             platforms.add(Platforms())
+        if event.type == rock_timer:
+            rocks.add(Rock())
     
     # Infinite background logic
     screen.fill((146, 244, 255))
@@ -174,6 +174,8 @@ while True:
         player.update()
         platforms.draw(screen)
         platforms.update()
+        rocks.draw(screen)
+        rocks.update()
         ground.draw(screen)
         
 
