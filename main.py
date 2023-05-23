@@ -1,13 +1,13 @@
 import pygame
 from sys import exit
-from random import randint
+# from random import randint
+from classes import Platforms, Ground, Rocks, platforms, ground, rocks
 
 pygame.init()
 
 # Window size
 WIDTH = 800
 HEIGHT = 600
-
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -84,48 +84,18 @@ class Player(pygame.sprite.Sprite):
         #     self.image = self.player_jump
     
     def update(self):
-        print(self.speedy)
         self.apply_gravity()
         self.jump()
         self.animation_state()
 
-class Platforms(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        # Load platform sprite
-        city_platform = pygame.image.load('assets/cidade/platform.png').convert_alpha()
-        self.image = city_platform
-        
-        # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(center = (900, randint(350,400)))
 
-    def destroy(self):
-        # Destroy platform if it goes off screen
-        if self.rect.x <= -300:
-            self.kill()
+def collision_player_rocks():
+    if pygame.sprite.spritecollide(player.sprite, rocks, False):
+        rocks.empty()
+        return False
+    else:
+        return True
 
-    def movement(self):
-        # Move platform to the left
-        self.rect.x -= 4
-
-    def update(self):
-        self.movement()
-        self.destroy()
-
-class Obstacles:
-    def __init__(self):
-        super().__init__()
-        pass
-    
-    def update(self):
-        pass
-    
-class Ground(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        ground = pygame.image.load('assets/cidade/ground.png').convert_alpha()
-        self.image = ground
-        self.rect = self.image.get_rect(center = (WIDTH / 2, 550))
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Evolution Run")
@@ -138,16 +108,15 @@ playing = True
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
-# Plataforms
-platforms = pygame.sprite.Group()
-
-# Ground
-ground = pygame.sprite.GroupSingle()
 ground.add(Ground())
+
+rocks_list = []
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(platform_timer, 2000)
+rocks_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(rocks_timer, 1800)
 
 while True:
     keys = pygame.key.get_pressed()
@@ -157,6 +126,8 @@ while True:
             exit()
         if event.type == platform_timer:
             platforms.add(Platforms())
+        if event.type == rocks_timer:
+            rocks.add(Rocks())
     
     # Infinite background logic
     screen.fill((146, 244, 255))
@@ -174,7 +145,14 @@ while True:
         player.update()
         platforms.draw(screen)
         platforms.update()
+        rocks.draw(screen)
+        rocks.update()
         ground.draw(screen)
+        playing = collision_player_rocks()
+    else:
+        platforms.empty()
+        screen.fill((94,129,162))
+        
         
 
     pygame.display.update()
