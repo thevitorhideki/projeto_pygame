@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 # from random import randint
 from classes import Platforms, Ground, Rocks, platforms, ground, rocks
+from math import floor
 
 pygame.init()
 
@@ -160,13 +161,22 @@ while True:
         rocks.update()
         ground.draw(screen)
         playing = collision_player_rocks()
-        score_text = font.render("Score: " + str(score), True, (255, 255, 255))
+        score_text = font.render("Score: " + str(floor(score)), True, (255, 255, 255))
     else:
         platforms.empty()
         screen.fill((94,129,162))
-        
+        game_over_text = font.render("Game Over", True, (255, 255, 255))
+        game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        screen.blit(game_over_text, game_over_rect)
+        if keys[pygame.K_SPACE]:
+            playing = True
+            score = 0
+            player.add(Player())
+            ground.add(Ground())
+            rocks.empty()
+            platforms.empty()
         
 
     pygame.display.update()
     clock.tick(60)
-    score+=1
+    score+=0.2
