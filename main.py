@@ -117,6 +117,16 @@ platform_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(platform_timer, 2000)
 rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
+clock = pygame.time.Clock()
+
+# Pontuação
+score = 0
+score_text = font.render("Score: " + str(score), True, (255, 255, 255))
+score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
+
+
+
+
 
 while True:
     keys = pygame.key.get_pressed()
@@ -131,6 +141,7 @@ while True:
     
     # Infinite background logic
     screen.fill((146, 244, 255))
+    screen.blit(score_text, score_rect)
 
     # if background2_rect.topright[0] == WIDTH:
     #     background_rect.x = WIDTH
@@ -149,6 +160,7 @@ while True:
         rocks.update()
         ground.draw(screen)
         playing = collision_player_rocks()
+        score_text = font.render("Score: " + str(score), True, (255, 255, 255))
     else:
         platforms.empty()
         screen.fill((94,129,162))
@@ -157,3 +169,4 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
+    score+=1
