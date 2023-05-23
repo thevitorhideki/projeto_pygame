@@ -1,7 +1,6 @@
 import pygame
 from sys import exit
 from random import randint
-from classes import Rock
 
 pygame.init()
 
@@ -25,14 +24,15 @@ class Player(pygame.sprite.Sprite):
         # Load player jump sprite and scale
         # self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
         
-        self.gravity = 0
-        self.frame_jump_counter = 0
+        self.gravity = 1
+        self.speedy = 0
         self.jump_bool = False
 
     def isCollidingPlatform(self, platforms):
-        for platform in platforms: 
-            if self.rect.colliderect(platform.rect):
-                return True
+        platforms_hit = pygame.sprite.spritecollide(self, platforms, False)
+        for platform in platforms_hit: 
+            if self.rect.colliderect(platform.rect): 
+                return platform
         return False
     
     def isCollidingGround(self, ground):
@@ -40,41 +40,40 @@ class Player(pygame.sprite.Sprite):
             if self.rect.colliderect(g.rect):
                 return True
         return False
-
-    def glide(self):
-        # Verify if player is jumping and if it is, count the frames
-        if self.jump_bool:
-            self.frame_jump_counter += 1
     
     def jump(self):
         # Verify if player press space and if it is, jump
-        if keys[pygame.K_SPACE] and (self.isCollidingPlatform(platforms) or self.isCollidingGround(ground)):
-            self.gravity = -20
+        if keys[pygame.K_SPACE] and self.jump_bool == False:
+            self.speedy -= 20
             self.jump_bool = True
     
     def apply_gravity(self):
-        # If player is gliding, apply gravity of 2
-        if keys[pygame.K_SPACE] and self.frame_jump_counter > 20:
-            self.gravity = 2
-        # If player is jumping, add 1 to gravity every frame
-        else: 
-            self.gravity += 1
-            
-        self.rect.y += self.gravity
-        if self.isCollidingPlatform(platforms):
-            for platform in platforms:
-                if self.rect.bottom >= platform.rect.top + 1:
-                    self.rect.bottom = platform.rect.top + 1 
-                    self.gravity = 0
-                    self.jump_bool = False
-                    self.frame_jump_counter = 0
-        elif self.isCollidingGround(ground):
+        # If Player is jumping and the space key is pressed, apply gravity to the player.
+        if keys[pygame.K_SPACE] and self.speedy >= 0:
+            self.gravity = 0.1
+        else:
+            self.gravity = 1
+        self.speedy += self.gravity
+        self.rect.y += self.speedy
+        if self.isCollidingGround(ground):
             for g in ground:
                 if self.rect.bottom > g.rect.top + 1:
-                    self.rect.bottom = g.rect.top + 1 
-                    self.gravity = 0
+                    self.rect.bottom = g.rect.top + 1
                     self.jump_bool = False
-                    self.frame_jump_counter = 0
+                    self.speedy = 0 
+            
+        
+        if self.isCollidingPlatform(platforms):
+            platform = self.isCollidingPlatform(platforms)
+            if self.speedy > 0:
+                self.rect.bottom = platform.rect.top + 1
+                self.jump_bool = False
+                self.speedy = 0
+                
+            elif self.speedy < 0:
+                self.rect.top = platform.rect.bottom 
+                self.speedy = 0
+        
     
     def animation_state(self):
         # If player is colliding with platform or ground, change sprite to walking animation
@@ -85,10 +84,10 @@ class Player(pygame.sprite.Sprite):
         #     self.image = self.player_jump
     
     def update(self):
-        self.jump()
+        print(self.speedy)
         self.apply_gravity()
+        self.jump()
         self.animation_state()
-        self.glide()
 
 class Platforms(pygame.sprite.Sprite):
     def __init__(self):
@@ -112,13 +111,21 @@ class Platforms(pygame.sprite.Sprite):
     def update(self):
         self.movement()
         self.destroy()
+
+class Obstacles:
+    def __init__(self):
+        super().__init__()
+        pass
+    
+    def update(self):
+        pass
     
 class Ground(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         ground = pygame.image.load('assets/cidade/ground.png').convert_alpha()
         self.image = ground
-        self.rect = self.image.get_rect(center = (WIDTH/2, 550))
+        self.rect = self.image.get_rect(center = (WIDTH / 2, 550))
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Evolution Run")
@@ -134,18 +141,13 @@ player.add(Player())
 # Plataforms
 platforms = pygame.sprite.Group()
 
-# Rock
-rocks = pygame.sprite.Group()
-
 # Ground
 ground = pygame.sprite.GroupSingle()
 ground.add(Ground())
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 4000)
-rock_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(rock_timer, 1800)
+pygame.time.set_timer(platform_timer, 2000)
 
 while True:
     keys = pygame.key.get_pressed()
@@ -155,8 +157,6 @@ while True:
             exit()
         if event.type == platform_timer:
             platforms.add(Platforms())
-        if event.type == rock_timer:
-            rocks.add(Rock())
     
     # Infinite background logic
     screen.fill((146, 244, 255))
@@ -174,8 +174,6 @@ while True:
         player.update()
         platforms.draw(screen)
         platforms.update()
-        rocks.draw(screen)
-        rocks.update()
         ground.draw(screen)
         
 
