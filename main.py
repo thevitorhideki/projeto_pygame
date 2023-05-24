@@ -159,10 +159,13 @@ while True:
     tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
     tree_stand = pygame.transform.scale(tree_stand, (150, 150))
     tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
+    start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
+    start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
     screen.fill((146, 244, 255))
     ground.draw(screen)
     screen.blit(tree_stand, tree_stand_rect)
     screen.blit(player_stand, player_stand_rect)
+    screen.blit(start_text, start_text_rect)
     # Check if the player clicks the space key
     if keys[pygame.K_SPACE]:
         # If he does, start the game
