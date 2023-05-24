@@ -119,13 +119,6 @@ player.add(Player())
 
 ground.add(Ground())
 
-# Timers
-platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 2000)
-
-rocks_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(rocks_timer, 1800)
-
 playing = True
 
 # Pontuação
@@ -142,7 +135,33 @@ try:
 except FileNotFoundError:
     pass
 
+while True:
+    keys = pygame.key.get_pressed()
 
+    for event in pygame.event.get():
+        # Check if the player clicks the X button
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
+    player_stand_rect = player_stand.get_rect(midbottom = (100,501))
+    tree = pygame.image.load('assets/tree.png').convert_alpha()
+    tree_rect = tree.get_rect(bottomleft = (0,500))
+    screen.fill((146, 244, 255))
+    ground.draw(screen)
+    screen.blit(tree, tree_rect)
+    screen.blit(player_stand, player_stand_rect)
+    # Check if the player clicks the space key
+    if keys[pygame.K_SPACE]:
+        # If he does, start the game
+        break
+
+# Timers
+platform_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(platform_timer, 2000)
+
+rocks_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(rocks_timer, 1800)
 
 while True:
     # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
@@ -159,14 +178,13 @@ while True:
         if event.type == rocks_timer:
             rocks.add(Rocks())
 
-    # Fill the background with a color
-    screen.fill((146, 244, 255))
-    # Place the score text on the screen
-    screen.blit(score_text, score_rect)
-
     # Check if the game is running
     if playing:
         # Draw the player, platforms, rocks and ground on the screen
+        # Fill the background with a color
+        screen.fill((146, 244, 255))
+        # Place the score text on the screen
+        screen.blit(score_text, score_rect)
         player.draw(screen)
         player.update()
         platforms.draw(screen)
