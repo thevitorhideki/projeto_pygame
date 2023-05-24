@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 # from random import randint
-from classes import Platforms, Ground, Rocks, platforms, ground, rocks
+from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
 from math import floor
 
 pygame.init()
@@ -123,6 +123,8 @@ player.add(Player())
 
 ground.add(Ground())
 
+tree.add(Tree())
+
 playing = True
 
 # Pontuação
@@ -154,11 +156,12 @@ while True:
             exit()
     player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
     player_stand_rect = player_stand.get_rect(midbottom = (100,501))
-    tree = pygame.image.load('assets/tree.png').convert_alpha()
-    tree_rect = tree.get_rect(bottomleft = (0,500))
+    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
+    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
+    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
     screen.fill((146, 244, 255))
     ground.draw(screen)
-    screen.blit(tree, tree_rect)
+    screen.blit(tree_stand, tree_stand_rect)
     screen.blit(player_stand, player_stand_rect)
     # Check if the player clicks the space key
     if keys[pygame.K_SPACE]:
@@ -197,6 +200,8 @@ while True:
         screen.fill((146, 244, 255))
         # Place the score text on the screen
         screen.blit(score_text, score_rect)
+        tree.draw(screen)
+        tree.update()
         player.draw(screen)
         player.update()
         platforms.draw(screen)
