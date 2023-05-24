@@ -133,20 +133,6 @@ score = 0
 save = True
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
-best_score = 0
-
-overall_best_score = 0
-
-try:
-    with open('best_score.txt', 'r') as file:
-        overall_best_score = float(file.read())
-except FileNotFoundError:
-    pass
-try:
-    with open('best_player.txt', 'r') as file:
-        best_player = str(file.read())
-except FileNotFoundError:
-    pass
 
 while True:
     keys = pygame.key.get_pressed()
@@ -240,16 +226,17 @@ while True:
         screen.blit(score_text, score_rect)
 
         # Best Score
-        if score > best_score:
-            best_score = score
+        best_score = scoreboard.loc[scoreboard['Name'] == nome_player, 'Score']
         your_best_score = font.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
         best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
 
+        # Overall Best Score
         overall_best_score = scoreboard['Score'].max()
         overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
+        
         # Save the best score in a csv
         if save:
             scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
@@ -260,7 +247,6 @@ while True:
                 
             scoreboard.to_csv('scoreboard.csv', index=False)
             save = False
-
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
