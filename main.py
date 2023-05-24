@@ -9,6 +9,10 @@ pygame.init()
 # Window size
 WIDTH = 800
 HEIGHT = 600
+
+# Nome do jogador
+nome_player = input("Digite o nome do jogador: ")
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -141,6 +145,11 @@ try:
         overall_best_score = float(file.read())
 except FileNotFoundError:
     pass
+try:
+    with open('best_player.txt', 'r') as file:
+        best_player = str(file.read())
+except FileNotFoundError:
+    pass
 
 
 
@@ -203,7 +212,7 @@ while True:
         screen.blit(your_best_score, best_score_rect)
 
         # Overall Best Score
-        overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
+        overall_best_score_text = font.render(f"Overall Best Score by {best_player}: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
@@ -211,8 +220,8 @@ while True:
         if best_score > overall_best_score:
             with open('best_score.txt', 'w') as file:
                 file.write(str(best_score))
-            # with open('best_player.txt', 'w') as file:
-            #     file.write(str(nome_player))
+            with open('best_player.txt', 'w') as file:
+                file.write(str(nome_player))
 
 
 
