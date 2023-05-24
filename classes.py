@@ -7,7 +7,7 @@ class Platforms(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Load platform sprite
-        city_platform = pygame.image.load('assets/cidade/platform.png').convert_alpha()
+        city_platform = pygame.image.load('assets/platform.png').convert_alpha()
         self.image = city_platform
         
         # Positioning the platform sprite on a random y axis
@@ -29,14 +29,14 @@ class Platforms(pygame.sprite.Sprite):
 class Ground(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        ground = pygame.image.load('assets/cidade/ground.png').convert_alpha()
+        ground = pygame.image.load('assets/ground.png').convert_alpha()
         self.image = ground
         self.rect = self.image.get_rect(center = (WIDTH / 2, 550))
 
 class Rocks(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        rock = pygame.image.load('assets/cidade/rock.png').convert_alpha()
+        rock = pygame.image.load('assets/rock.png').convert_alpha()
         self.image = rock
         
         # Positioning the platform sprite on a random y axis
