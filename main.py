@@ -203,7 +203,7 @@ while True:
         screen.blit(your_best_score, best_score_rect)
 
         # Overall Best Score
-        overall_best_score_text = font.render("Overall Best Score: " + str(overall_best_score), True, (255, 255, 255))
+        overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
