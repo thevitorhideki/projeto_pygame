@@ -132,6 +132,17 @@ playing = True
 score = 0
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
+best_score = 0
+
+overall_best_score = 0
+
+try:
+    with open('best_score.txt', 'r') as file:
+        overall_best_score = float(file.read())
+except FileNotFoundError:
+    pass
+
+
 
 while True:
     # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
@@ -183,7 +194,26 @@ while True:
         game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
         screen.blit(game_over_text, game_over_rect)
         screen.blit(score_text, score_rect)
+
+        # Best Score
+        if score > best_score:
+            best_score = score
+        your_best_score = font.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
+        best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
+        screen.blit(your_best_score, best_score_rect)
+
+        # Overall Best Score
+        overall_best_score_text = font.render("Overall Best Score: " + str(overall_best_score), True, (255, 255, 255))
+        overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
+        screen.blit(overall_best_score_text, overall_best_score_rect)
+
+        # Save the best score in a txt file
+        with open('best_score.txt', 'w') as file:
+            file.write(str(best_score))
+
+
         # If the player press space, restart the game
+
         if keys[pygame.K_SPACE]:
             playing = True
             score = 0
@@ -192,5 +222,7 @@ while True:
             rocks.empty()
             platforms.empty()
         
+
+    
     pygame.display.update()
     clock.tick(60)
