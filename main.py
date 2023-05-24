@@ -13,8 +13,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Load player sprites and scale
-        player_1 = pygame.image.load('assets/cidade/player1.png').convert_alpha()
-        player_2 = pygame.image.load('assets/cidade/player2.png').convert_alpha()
+        player_1 = pygame.image.load('assets/kid/player1.png').convert_alpha()
+        player_2 = pygame.image.load('assets/kid/player2.png').convert_alpha()
         
         # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom = (100,501))
         
         # Load player jump sprite and scale
-        # self.player_jump = pygame.image.load('assets/cidade/player1.png').convert_alpha()
+        # self.player_jump = pygame.image.load('assets/kid/player1.png').convert_alpha()
         
         self.gravity = 1
         self.speedy = 0
