@@ -207,10 +207,13 @@ while True:
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
-        # Save the best score in a txt file
+        # Save the best score and best player in a txt file
         if best_score > overall_best_score:
             with open('best_score.txt', 'w') as file:
                 file.write(str(best_score))
+            # with open('best_player.txt', 'w') as file:
+            #     file.write(str(nome_player))
+
 
 
         # If the player press space, restart the game
