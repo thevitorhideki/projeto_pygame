@@ -2,7 +2,7 @@ import pygame
 import pandas as pd
 from sys import exit
 # from random import randint
-from classes import Platforms, Ground, Rocks, platforms, ground, rocks
+from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
 from math import floor
 
 pygame.init()
@@ -11,7 +11,8 @@ pygame.init()
 WIDTH = 800
 HEIGHT = 600
 
-nome = input("Digite seu nome: ")
+# Nome do jogador
+nome_player = input("Digite o nome do jogador: ")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -123,12 +124,7 @@ player.add(Player())
 
 ground.add(Ground())
 
-# Timers
-platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 2000)
-
-rocks_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(rocks_timer, 1800)
+tree.add(Tree())
 
 playing = True
 
@@ -138,6 +134,54 @@ save = True
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
 best_score = 0
+
+overall_best_score = 0
+
+try:
+    with open('best_score.txt', 'r') as file:
+        overall_best_score = float(file.read())
+except FileNotFoundError:
+    pass
+try:
+    with open('best_player.txt', 'r') as file:
+        best_player = str(file.read())
+except FileNotFoundError:
+    pass
+
+while True:
+    keys = pygame.key.get_pressed()
+
+    for event in pygame.event.get():
+        # Check if the player clicks the X button
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
+    player_stand_rect = player_stand.get_rect(midbottom = (100,501))
+    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
+    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
+    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
+    start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
+    start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
+    screen.fill((146, 244, 255))
+    ground.draw(screen)
+    screen.blit(tree_stand, tree_stand_rect)
+    screen.blit(player_stand, player_stand_rect)
+    screen.blit(start_text, start_text_rect)
+    # Check if the player clicks the space key
+    if keys[pygame.K_SPACE]:
+        # If he does, start the game
+        break
+
+    pygame.display.update()
+    clock.tick(60)
+
+# Timers
+platform_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(platform_timer, 2000)
+
+rocks_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(rocks_timer, 1800)
 
 while True:
     # Read the scoreboard file
@@ -157,14 +201,15 @@ while True:
         if event.type == rocks_timer:
             rocks.add(Rocks())
 
-    # Fill the background with a color
-    screen.fill((146, 244, 255))
-    # Place the score text on the screen
-    screen.blit(score_text, score_rect)
-
     # Check if the game is running
     if playing:
         # Draw the player, platforms, rocks and ground on the screen
+        # Fill the background with a color
+        screen.fill((146, 244, 255))
+        # Place the score text on the screen
+        screen.blit(score_text, score_rect)
+        tree.draw(screen)
+        tree.update()
         player.draw(screen)
         player.update()
         platforms.draw(screen)
@@ -201,7 +246,6 @@ while True:
         best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
 
-        # Overall Best Score
         overall_best_score = scoreboard['Score'].max()
         overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
@@ -216,6 +260,7 @@ while True:
                 
             scoreboard.to_csv('scoreboard.csv', index=False)
             save = False
+
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
