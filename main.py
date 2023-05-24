@@ -253,10 +253,10 @@ while True:
         # Save the best score in a csv
         if save:
             scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
-            if nome not in scoreboard['Name'].values:
-                scoreboard.loc[len(scoreboard)] = [nome, floor(score)]
-            elif nome in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] == nome, 'Score'] = floor(score)
+            if nome_player not in scoreboard['Name'].values:
+                scoreboard.loc[len(scoreboard)] = [nome_player, floor(score)]
+            elif nome_player in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome_player]['Score'].values[0]:
+                scoreboard.loc[scoreboard['Name'] == nome_player, 'Score'] = floor(score)
                 
             scoreboard.to_csv('scoreboard.csv', index=False)
             save = False
