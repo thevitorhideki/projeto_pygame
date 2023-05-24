@@ -165,6 +165,9 @@ while True:
         # If he does, start the game
         break
 
+    pygame.display.update()
+    clock.tick(60)
+
 # Timers
 platform_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(platform_timer, 2000)
