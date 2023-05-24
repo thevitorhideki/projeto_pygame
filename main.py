@@ -208,8 +208,9 @@ while True:
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
         # Save the best score in a txt file
-        with open('best_score.txt', 'w') as file:
-            file.write(str(best_score))
+        if best_score > overall_best_score:
+            with open('best_score.txt', 'w') as file:
+                file.write(str(best_score))
 
 
         # If the player press space, restart the game
