@@ -1,4 +1,5 @@
 import pygame
+import pandas as pd
 from sys import exit
 # from random import randint
 from classes import Platforms, Ground, Rocks, platforms, ground, rocks
@@ -9,6 +10,9 @@ pygame.init()
 # Window size
 WIDTH = 800
 HEIGHT = 600
+
+nome = input("Digite seu nome: ")
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -130,21 +134,15 @@ playing = True
 
 # Pontuação
 score = 0
+save = True
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
 best_score = 0
 
-overall_best_score = 0
-
-try:
-    with open('best_score.txt', 'r') as file:
-        overall_best_score = float(file.read())
-except FileNotFoundError:
-    pass
-
-
-
 while True:
+    # Read the scoreboard file
+    scoreboard = pd.read_csv('scoreboard.csv')
+    
     # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
     keys = pygame.key.get_pressed()
     
@@ -176,6 +174,7 @@ while True:
         ground.draw(screen)
         # Check if the player collides with a rock, if he does, stop the game
         playing = Player.collision_player_rocks()
+        save = True
         # Update the score
         score += 0.2
         score_text = font.render("Score: " + str(floor(score)), True, (255, 255, 255))
@@ -203,21 +202,22 @@ while True:
         screen.blit(your_best_score, best_score_rect)
 
         # Overall Best Score
+        overall_best_score = scoreboard['Score'].max()
         overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
-
-        # Save the best score and best player in a txt file
-        if best_score > overall_best_score:
-            with open('best_score.txt', 'w') as file:
-                file.write(str(best_score))
-            # with open('best_player.txt', 'w') as file:
-            #     file.write(str(nome_player))
-
-
+        # Save the best score in a csv
+        if save:
+            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
+            if nome not in scoreboard['Name'].values:
+                scoreboard.loc[len(scoreboard)] = [nome, floor(score)]
+            elif nome in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome]['Score'].values[0]:
+                scoreboard.loc[scoreboard['Name'] == nome, 'Score'] = floor(score)
+                
+            scoreboard.to_csv('scoreboard.csv', index=False)
+            save = False
 
         # If the player press space, restart the game
-
         if keys[pygame.K_SPACE]:
             playing = True
             score = 0
@@ -225,8 +225,6 @@ while True:
             ground.add(Ground())
             rocks.empty()
             platforms.empty()
-        
-
     
     pygame.display.update()
     clock.tick(60)
