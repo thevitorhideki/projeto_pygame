@@ -1,4 +1,4 @@
-# Nome do jogo
+# Existential Crisis
 
 Projeto de jogo desenvolvido com o [Pygame][pygame] na matéria de Design de Software do [Insper][insper] pelos alunos:
 
@@ -8,9 +8,15 @@ Projeto de jogo desenvolvido com o [Pygame][pygame] na matéria de Design de Sof
 
 [Vitor Hideki Pereira Katakura][vitor]
 
-# Conceito do jogo
+---
 
-## Como jogar:
+## Conceito do jogo
+
+Este jogo conta a história de uma criança que encontra uma máquina do tempo e viaja por diferentes fases da vida: infância, idade adulta e velhice. Cada fase apresenta desafios únicos que a criança deve superar. No final, a criança se despede da vida e uma nova árvore cresce, simbolizando um novo começo. É uma jornada emocionante de crescimento, transformação e renovação.
+
+---
+
+## Como jogar
 
 Primeiro instale o [python][python_website] ou [anaconda][anaconda_website] e depois utilize o seguinte comando no seu terminal:
 
