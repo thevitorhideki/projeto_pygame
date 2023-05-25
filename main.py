@@ -1,7 +1,6 @@
 import pygame
 import pandas as pd
 from sys import exit
-# from random import randint
 from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
 from math import floor
 
@@ -122,7 +121,8 @@ font = pygame.font.Font('font/Pixeltype.ttf', 50)
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
-ground.add(Ground())
+ground.add(Ground(0))
+ground.add(Ground(WIDTH))
 
 tree.add(Tree())
 
@@ -169,6 +169,9 @@ pygame.time.set_timer(platform_timer, 2000)
 rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
 
+ground_timer = pygame.USEREVENT + 3
+pygame.time.set_timer(ground_timer, 3000)
+
 while True:
     # Read the scoreboard file
     scoreboard = pd.read_csv('scoreboard.csv')
@@ -186,6 +189,8 @@ while True:
             platforms.add(Platforms())
         if event.type == rocks_timer:
             rocks.add(Rocks())
+        if event.type == ground_timer:
+            ground.add(Ground(WIDTH))
 
     # Check if the game is running
     if playing:
@@ -203,6 +208,8 @@ while True:
         rocks.draw(screen)
         rocks.update()
         ground.draw(screen)
+        ground.draw(screen)
+        ground.update()
         # Check if the player collides with a rock, if he does, stop the game
         playing = Player.collision_player_rocks()
         save = True
@@ -219,6 +226,17 @@ while True:
         # Fill the screen with a color
         screen.fill((94,129,162))
         
+        # Save the best score in a csv
+        if save:
+            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
+            if nome_player not in scoreboard['Name'].values:
+                scoreboard.loc[len(scoreboard)] = [nome_player, floor(score)]
+            elif nome_player in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome_player]['Score'].values[0]:
+                scoreboard.loc[scoreboard['Name'] == nome_player, 'Score'] = floor(score)
+                
+            scoreboard.to_csv('scoreboard.csv', index=False)
+            save = False
+            
         # Show the game over text and the score
         game_over_text = font.render("Game Over", True, (255, 255, 255))
         game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
@@ -237,23 +255,13 @@ while True:
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
         
-        # Save the best score in a csv
-        if save:
-            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
-            if nome_player not in scoreboard['Name'].values:
-                scoreboard.loc[len(scoreboard)] = [nome_player, floor(score)]
-            elif nome_player in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome_player]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] == nome_player, 'Score'] = floor(score)
-                
-            scoreboard.to_csv('scoreboard.csv', index=False)
-            save = False
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
             playing = True
             score = 0
             player.add(Player())
-            ground.add(Ground())
+            ground.add(Ground(0))
             rocks.empty()
             platforms.empty()
     

@@ -11,7 +11,7 @@ class Platforms(pygame.sprite.Sprite):
         self.image = city_platform
         
         # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(center = (900, randint(350,400)))
+        self.rect = self.image.get_rect(center = (1000, randint(350,400)))
 
     def destroy(self):
         # Destroy platform if it goes off screen
@@ -27,11 +27,23 @@ class Platforms(pygame.sprite.Sprite):
         self.destroy()
 
 class Ground(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos_x):
         super().__init__()
         ground = pygame.image.load('assets/ground.png').convert_alpha()
         self.image = ground
-        self.rect = self.image.get_rect(center = (WIDTH / 2, 550))
+        self.rect = self.image.get_rect(bottomleft = (pos_x, 600))
+    
+    def movement(self):
+        self.rect.x -= 4
+        
+    def destroy(self):
+        # Destroy ground if it goes off screen
+        if self.rect.x <= -WIDTH:
+            self.kill()
+    
+    def update(self):
+        self.movement()
+        self.destroy()
 
 class Rocks(pygame.sprite.Sprite):
     def __init__(self):
@@ -77,6 +89,6 @@ class Tree(pygame.sprite.Sprite):
         self.destroy()
         
 platforms = pygame.sprite.Group()
-ground = pygame.sprite.GroupSingle()
+ground = pygame.sprite.Group()
 rocks = pygame.sprite.Group()
 tree = pygame.sprite.GroupSingle()
