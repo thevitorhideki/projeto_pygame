@@ -199,9 +199,13 @@ while True:
         ground.draw(screen)
         ground.update()
         
-        # Check if the player collides with a rock, if he does, stop the game
-        game_state['playing'] = Player.collision_player_rocks()
-        game_state['game_over'] = not game_state['playing']
+        # Move the sky background
+        background_rect.x -= 1
+
+        # Check if the player collides with a rock or the background ends, if he does, stop the game
+        if not Player.collision_player_rocks() or background_rect.right <= WIDTH:
+            game_state['playing'] = False
+            game_state['game_over'] = True
         
         # Update the score
         score += 0.2
@@ -212,6 +216,7 @@ while True:
         player.empty()
         rocks.empty()
         platforms.empty()
+        ground.empty()
         
         # Fill the screen with a color
         screen.fill((94,129,162))
@@ -254,8 +259,8 @@ while True:
             score = 0
             player.add(Player())
             ground.add(Ground(0))
-            rocks.empty()
-            platforms.empty()
+            ground.add(Ground(0))
+            ground.add(Ground(WIDTH))
     
     pygame.display.update()
     clock.tick(60)
