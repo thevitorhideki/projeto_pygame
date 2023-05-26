@@ -109,7 +109,7 @@ class Player(pygame.sprite.Sprite):
 
 # Window settings
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Evolution Run")
+pygame.display.set_caption("Existential Crisis")
 
 clock = pygame.time.Clock()
 font = pygame.font.Font('font/Pixeltype.ttf', 50)
