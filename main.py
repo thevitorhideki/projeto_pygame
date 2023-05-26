@@ -65,14 +65,11 @@ class Player(pygame.sprite.Sprite):
         # Gravity effect
         self.speedy += self.gravity
         self.rect.y += self.speedy
-        if self.isCollidingGround(ground):
-            # Checks if the player is colliding with the ground
-            for g in ground:
-                if self.rect.bottom > g.rect.top + 1:
-                    self.rect.bottom = g.rect.top + 1
-                    self.jump_bool = False
-                    self.speedy = 0 
-            
+        
+        if self.rect.bottom > 501:
+            self.rect.bottom = 501
+            self.speedy = 0
+            self.jump_bool = False
         
         if self.isCollidingPlatform(platforms):
             platform = self.isCollidingPlatform(platforms)
@@ -126,41 +123,13 @@ ground.add(Ground(WIDTH))
 
 tree.add(Tree())
 
-playing = True
+game_state = {'playing': False, 'game_over': False, 'menu': True}
 
 # Pontuação
 score = 0
 save = True
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
-
-while True:
-    keys = pygame.key.get_pressed()
-
-    for event in pygame.event.get():
-        # Check if the player clicks the X button
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
-    player_stand_rect = player_stand.get_rect(midbottom = (100,501))
-    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
-    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
-    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
-    start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
-    start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
-    screen.fill((146, 244, 255))
-    ground.draw(screen)
-    screen.blit(tree_stand, tree_stand_rect)
-    screen.blit(player_stand, player_stand_rect)
-    screen.blit(start_text, start_text_rect)
-    # Check if the player clicks the space key
-    if keys[pygame.K_SPACE]:
-        # If he does, start the game
-        break
-
-    pygame.display.update()
-    clock.tick(60)
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
@@ -192,12 +161,31 @@ while True:
         if event.type == ground_timer:
             ground.add(Ground(WIDTH))
 
-    # Check if the game is running
-    if playing:
-        # Draw the player, platforms, rocks and ground on the screen
-        # Fill the background with a color
-        screen.fill((146, 244, 255))
-        # Place the score text on the screen
+    if game_state['menu']:
+        background = pygame.image.load('assets/sky.png').convert_alpha()
+        background_rect = background.get_rect(bottomleft=(0, 700))
+        player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
+        player_stand_rect = player_stand.get_rect(midbottom = (100,501))
+        tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
+        tree_stand = pygame.transform.scale(tree_stand, (150, 150))
+        tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
+        start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
+        start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
+        screen.blit(background, background_rect)
+        ground.draw(screen)
+        screen.blit(tree_stand, tree_stand_rect)
+        screen.blit(player_stand, player_stand_rect)
+        screen.blit(start_text, start_text_rect)
+        
+        # Check if the player clicks the space key
+        if keys[pygame.K_SPACE]:
+            # If he does, start the game
+            game_state['playing'] = True
+            game_state['menu'] = False
+    if game_state['playing']:
+        save = True
+        # Draw the background, score, tree, player, platforms, rocks and ground on the screen
+        screen.blit(background, background_rect)
         screen.blit(score_text, score_rect)
         tree.draw(screen)
         tree.update()
@@ -210,14 +198,16 @@ while True:
         ground.draw(screen)
         ground.draw(screen)
         ground.update()
+        
         # Check if the player collides with a rock, if he does, stop the game
-        playing = Player.collision_player_rocks()
-        save = True
+        game_state['playing'] = Player.collision_player_rocks()
+        game_state['game_over'] = not game_state['playing']
+        
         # Update the score
         score += 0.2
         score_text = font.render("Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
-    else:
+    if game_state['game_over']:
         # Clear all the sprites
         player.empty()
         rocks.empty()
@@ -225,6 +215,7 @@ while True:
         
         # Fill the screen with a color
         screen.fill((94,129,162))
+        background_rect.x = 0
         
         # Save the best score in a csv
         if save:
@@ -258,7 +249,8 @@ while True:
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
-            playing = True
+            game_state['playing'] = True
+            game_state['game_over'] = False
             score = 0
             player.add(Player())
             ground.add(Ground(0))
