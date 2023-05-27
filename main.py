@@ -1,14 +1,12 @@
 import pygame
 import pandas as pd
-from sys import exit
-from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
 from math import floor
+from sys import exit
+
+from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
+from settings import WIDTH, HEIGHT
 
 pygame.init()
-
-# Window size
-WIDTH = 800
-HEIGHT = 600
 
 # Nome do jogador
 nome_player = input("Digite o nome do jogador: ")
@@ -24,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.player_walk = [player_1, player_2]
         self.player_index = 0
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom = (100,501))
+        self.rect = self.image.get_rect(midbottom = (100,620))
         
         # Load player jump sprite and scale
         # self.player_jump = pygame.image.load('assets/kid/player1.png').convert_alpha()
@@ -66,8 +64,8 @@ class Player(pygame.sprite.Sprite):
         self.speedy += self.gravity
         self.rect.y += self.speedy
         
-        if self.rect.bottom > 501:
-            self.rect.bottom = 501
+        if self.rect.bottom > 620:
+            self.rect.bottom = 620
             self.speedy = 0
             self.jump_bool = False
         
@@ -118,9 +116,6 @@ font = pygame.font.Font('font/Pixeltype.ttf', 50)
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
-ground.add(Ground(0))
-ground.add(Ground(WIDTH))
-
 tree.add(Tree())
 
 game_state = {'playing': False, 'game_over': False, 'menu': True}
@@ -137,9 +132,6 @@ pygame.time.set_timer(platform_timer, 2000)
 
 rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
-
-ground_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(ground_timer, 3000)
 
 while True:
     # Read the scoreboard file
@@ -158,19 +150,19 @@ while True:
             platforms.add(Platforms())
         if event.type == rocks_timer:
             rocks.add(Rocks())
-        if event.type == ground_timer:
-            ground.add(Ground(WIDTH))
 
     if game_state['menu']:
         background = pygame.image.load('assets/sky.png').convert_alpha()
-        background_rect = background.get_rect(bottomleft=(0, 700))
+        background_rect = background.get_rect(bottomleft=(0, 800))
         player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
-        player_stand_rect = player_stand.get_rect(midbottom = (100,501))
+        player_stand_rect = player_stand.get_rect(midbottom = (100,620))
         tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
         tree_stand = pygame.transform.scale(tree_stand, (150, 150))
-        tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
+        tree_stand_rect = tree_stand.get_rect(bottomleft = (0,620))
         start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
-        start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
+        start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 320))
+        ground.add(Ground(0))
+        ground.add(Ground(WIDTH))
         screen.blit(background, background_rect)
         ground.draw(screen)
         screen.blit(tree_stand, tree_stand_rect)
@@ -195,7 +187,6 @@ while True:
         platforms.update()
         rocks.draw(screen)
         rocks.update()
-        ground.draw(screen)
         ground.draw(screen)
         ground.update()
         
@@ -258,7 +249,6 @@ while True:
             game_state['game_over'] = False
             score = 0
             player.add(Player())
-            ground.add(Ground(0))
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
     

@@ -1,7 +1,6 @@
 import pygame
 from random import randint
-
-WIDTH = 800
+from settings import WIDTH, HEIGHT
 
 class Platforms(pygame.sprite.Sprite):
     def __init__(self):
@@ -11,7 +10,7 @@ class Platforms(pygame.sprite.Sprite):
         self.image = city_platform
         
         # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(center = (1000, randint(350,400)))
+        self.rect = self.image.get_rect(bottomleft = (WIDTH, randint(350,400)))
 
     def destroy(self):
         # Destroy platform if it goes off screen
@@ -31,19 +30,19 @@ class Ground(pygame.sprite.Sprite):
         super().__init__()
         ground = pygame.image.load('assets/ground.png').convert_alpha()
         self.image = ground
-        self.rect = self.image.get_rect(bottomleft = (pos_x, 600))
+        self.rect = self.image.get_rect(bottomleft = (pos_x, 700))
     
     def movement(self):
         self.rect.x -= 4
         
-    def destroy(self):
+    def replace(self):
         # Destroy ground if it goes off screen
         if self.rect.x <= -WIDTH:
-            self.kill()
+            self.rect.x = WIDTH
     
     def update(self):
         self.movement()
-        self.destroy()
+        self.replace()
 
 class Rocks(pygame.sprite.Sprite):
     def __init__(self):
@@ -52,7 +51,7 @@ class Rocks(pygame.sprite.Sprite):
         self.image = rock
         
         # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(bottomleft = (randint(900, 1100), 500))
+        self.rect = self.image.get_rect(bottomleft = (randint(WIDTH, WIDTH + 200), 620))
     
     def destroy(self):
         # Destroy platform if it goes off screen
@@ -73,7 +72,7 @@ class Tree(pygame.sprite.Sprite):
         tree = pygame.image.load('assets/tree.png').convert_alpha()
         tree = pygame.transform.scale(tree, (150, 150))
         self.image = tree
-        self.rect = self.image.get_rect(bottomleft = (0,500))
+        self.rect = self.image.get_rect(bottomleft = (0,620))
     
     def destroy(self):
         # Destroy platform if it goes off screen
