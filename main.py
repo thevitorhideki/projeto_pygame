@@ -119,6 +119,9 @@ player.add(Player())
 
 tree.add(Tree())
 
+ground.add(Ground(0))
+ground.add(Ground(WIDTH))
+
 game_state = {'playing': False, 'game_over': False, 'menu': True}
 
 # Pontuação
@@ -144,8 +147,6 @@ while game_state['menu']:
     background_rect = background.get_rect(bottomleft=(0, 800))
     screen.blit(background, background_rect)
     
-    ground.add(Ground(0))
-    ground.add(Ground(WIDTH))
     ground.draw(screen)
     
     player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
