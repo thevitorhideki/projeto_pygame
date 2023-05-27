@@ -124,38 +124,7 @@ game_state = {'playing': False, 'game_over': False, 'menu': True}
 score = 0
 save = True
 score_text = font.render("Score: " + str(score), True, (255, 255, 255))
-score_rect = score_text.get_rect(topright=(WIDTH - 660, 10))
-
-while game_state['menu']:
-        keys = pygame.key.get_pressed()
-        for event in pygame.event.get():
-        # Check if the player clicks the X button
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-        background = pygame.image.load('assets/sky.png').convert_alpha()
-        background_rect = background.get_rect(bottomleft=(0, 700))
-        player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
-        player_stand_rect = player_stand.get_rect(midbottom = (100,501))
-        tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
-        tree_stand = pygame.transform.scale(tree_stand, (150, 150))
-        tree_stand_rect = tree_stand.get_rect(bottomleft = (0,500))
-        start_text = font.render(f"Press SPACE to START", True, (255, 255, 255))
-        start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
-        screen.blit(background, background_rect)
-        ground.draw(screen)
-        screen.blit(tree_stand, tree_stand_rect)
-        screen.blit(player_stand, player_stand_rect)
-        screen.blit(start_text, start_text_rect)
-        
-        # Check if the player clicks the space key
-        if keys[pygame.K_SPACE]:
-            # If he does, start the game
-            game_state['playing'] = True
-            game_state['menu'] = False
-
-        pygame.display.update()
-        clock.tick(60)
+score_rect = score_text.get_rect(topleft=(10, 10))
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
@@ -273,7 +242,6 @@ while True:
         overall_best_score_text = font.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
-        
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
