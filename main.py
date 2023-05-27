@@ -3,7 +3,11 @@ import pandas as pd
 from math import floor
 from sys import exit
 
-from classes import Platforms, Ground, Rocks, Tree, platforms, ground, rocks, tree
+from tree import Tree, tree
+from ground import Ground, ground
+from platforms import Platforms, platforms
+from rocks import Rocks, rocks
+
 from settings import WIDTH, HEIGHT
 
 pygame.init()
@@ -94,10 +98,6 @@ class Player(pygame.sprite.Sprite):
     def collision_player_rocks():
         # Checks if the player is colliding with a rock
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
-            # If player is colliding with a rock, clear the list of rocks and return False
-            rocks.empty()
-            return False
-        else:
             return True
         
     def update(self):
@@ -195,7 +195,7 @@ while True:
         background_rect.x -= 1
 
         # Check if the player collides with a rock or the background ends, if he does, stop the game
-        if not Player.collision_player_rocks() or background_rect.right <= WIDTH:
+        if Player.collision_player_rocks() or background_rect.right <= WIDTH:
             game_state['playing'] = False
             game_state['game_over'] = True
         
@@ -216,11 +216,11 @@ while True:
         
         # Save the best score in a csv
         if save:
-            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
             if nome_player not in scoreboard['Name'].values:
                 scoreboard.loc[len(scoreboard)] = [nome_player, floor(score)]
             elif nome_player in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome_player]['Score'].values[0]:
                 scoreboard.loc[scoreboard['Name'] == nome_player, 'Score'] = floor(score)
+            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
                 
             scoreboard.to_csv('scoreboard.csv', index=False)
             save = False
