@@ -13,7 +13,7 @@ from settings import WIDTH, HEIGHT
 pygame.init()
 
 # Nome do jogador
-nome_player = ''
+player_name = ''
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -138,10 +138,13 @@ while game_state['player_name']:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
+
+    game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
+    game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
+    screen.blit(game_name, game_name_rect)
     
-    
-    
-    
+
     background = pygame.image.load('assets/sky.png').convert_alpha()
     background_rect = background.get_rect(bottomleft=(0, 800))
     screen.blit(background, background_rect)
@@ -157,7 +160,7 @@ while game_state['player_name']:
     tree_stand_rect = tree_stand.get_rect(bottomleft = (0,620))
     screen.blit(tree_stand, tree_stand_rect)
     
-    start_text = font_pixel.render(f"Enter your name: {nome_player}", True, (255, 255, 255))
+    start_text = font_pixel.render(f"Enter your name: {player_name}", True, (255, 255, 255))
     start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
     screen.blit(start_text, start_rect)
 
@@ -167,9 +170,9 @@ while game_state['player_name']:
                 game_state['player_name']=False
                 game_state['menu']=True
             elif event.key == pygame.K_BACKSPACE:
-                nome_player = nome_player[:-1]
+                player_name = player_name[:-1]
             else:
-                nome_player += event.unicode
+                player_name += event.unicode
 
         pygame.display.update()
         clock.tick(60)
@@ -302,10 +305,10 @@ while True:
         
         # Save the best score in a csv
         if save:
-            if nome_player not in scoreboard['Name'].values:
-                scoreboard.loc[len(scoreboard)] = [nome_player, floor(score)]
-            elif nome_player in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == nome_player]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] == nome_player, 'Score'] = floor(score)
+            if player_name not in scoreboard['Name'].values:
+                scoreboard.loc[len(scoreboard)] = [player_name, floor(score)]
+            elif player_name in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == player_name]['Score'].values[0]:
+                scoreboard.loc[scoreboard['Name'] == player_name, 'Score'] = floor(score)
             scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
                 
             scoreboard.to_csv('scoreboard.csv', index=False)
@@ -318,7 +321,7 @@ while True:
         screen.blit(score_text, score_rect)
 
         # Best Score
-        best_score = scoreboard.loc[scoreboard['Name'] == nome_player, 'Score']
+        best_score = scoreboard.loc[scoreboard['Name'] == player_name, 'Score']
         your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
         best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
