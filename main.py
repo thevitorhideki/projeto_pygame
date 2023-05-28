@@ -13,7 +13,7 @@ from settings import WIDTH, HEIGHT
 pygame.init()
 
 # Nome do jogador
-nome_player = input("Digite o nome do jogador: ")
+nome_player = ''
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -122,13 +122,61 @@ tree.add(Tree())
 ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
-game_state = {'playing': False, 'game_over': False, 'menu': True}
+game_state = {'playing': False, 'game_over': False, 'menu': False, 'player_name': True}
 
 # Pontuação
 score = 0
 save = True
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
+
+
+while game_state['player_name']:
+
+    for event in pygame.event.get():
+        print(event)
+        # Check if the player clicks the X button
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+    
+    
+    
+    
+    background = pygame.image.load('assets/sky.png').convert_alpha()
+    background_rect = background.get_rect(bottomleft=(0, 800))
+    screen.blit(background, background_rect)
+    
+    ground.draw(screen)
+    
+    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
+    player_stand_rect = player_stand.get_rect(midbottom = (100,620))
+    screen.blit(player_stand, player_stand_rect)
+    
+    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
+    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
+    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,620))
+    screen.blit(tree_stand, tree_stand_rect)
+    
+    start_text = font_pixel.render(f"Enter your name: {nome_player}", True, (255, 255, 255))
+    start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+    screen.blit(start_text, start_rect)
+    
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                enter_name = False
+                game_state['player_name']=False
+                game_state['menu']=True
+            elif event.key == pygame.K_BACKSPACE:
+                nome_player = nome_player[:-1]
+            else:
+                nome_player += event.unicode
+
+        pygame.display.update()
+        clock.tick(60)
+    pygame.display.update()
+    clock.tick(60)
 
 while game_state['menu']:
     # Read the scoreboard file
