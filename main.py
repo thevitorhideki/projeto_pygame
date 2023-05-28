@@ -134,7 +134,6 @@ score_rect = score_text.get_rect(topleft=(10, 10))
 while game_state['player_name']:
 
     for event in pygame.event.get():
-        print(event)
         # Check if the player clicks the X button
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -161,11 +160,10 @@ while game_state['player_name']:
     start_text = font_pixel.render(f"Enter your name: {nome_player}", True, (255, 255, 255))
     start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
     screen.blit(start_text, start_rect)
-    
+
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
-                enter_name = False
                 game_state['player_name']=False
                 game_state['menu']=True
             elif event.key == pygame.K_BACKSPACE:
