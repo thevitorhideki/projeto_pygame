@@ -10,7 +10,7 @@ from ground import Ground, ground
 from platforms import Platforms, platforms
 from rocks import Rocks, rocks
 from portal import Portal, portal
-from fireman import Fireman, fireman
+from demon import Demon, demon
 
 from settings import WIDTH, HEIGHT
 from utils import save_score
@@ -42,6 +42,8 @@ mixer.music.play(-1)
 
 #Play the music
 mixer.music.play()
+
+next_track = True
 
 
 class Player(pygame.sprite.Sprite):
@@ -129,13 +131,13 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
         
-    def collision_player_time_machine():
-        # Checks if the player is colliding with a time machine
+    def collision_player_portal():
+        # Checks if the player is colliding with the portal
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
         
-    def collision_player_fireman():
-        if pygame.sprite.spritecollide(player.sprite, fireman, False):
+    def collision_player_demon():
+        if pygame.sprite.spritecollide(player.sprite, demon, False):
             return True
 
     def update(self):
@@ -161,7 +163,7 @@ ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
 portal.add(Portal())
-fireman.add(Fireman())
+demon.add(Demon())
 
 game_state = {
     'playing_kid': False,
@@ -240,7 +242,9 @@ while True:
         background = pygame.image.load('assets/sky.png').convert_alpha()
         background_rect = background.get_rect(bottomleft=(0, 800))
         screen.blit(background, background_rect)
-
+        
+        background_2 = pygame.image.load('assets/sky.png').convert_alpha()
+        background_2_rect = background.get_rect(bottomleft=(background_rect.width, 800))
 
         # Load the player and tree images and draw them on the screen
         player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
@@ -324,7 +328,7 @@ while True:
             game_state['playing_kid'] = False
             game_state['game_over'] = True
         
-        if Player.collision_player_time_machine():
+        if Player.collision_player_portal():
             transition(screen)
             game_state['playing_kid'] = False
             game_state['playing_man'] = True
@@ -366,7 +370,7 @@ while True:
             game_state['playing_man'] = False
             game_state['game_over'] = True
 
-        if Player.collision_player_time_machine():
+        if Player.collision_player_portal():
             transition(screen)
             game_state['playing_man'] = False
             game_state['playing_oldman'] = True
@@ -397,8 +401,8 @@ while True:
         platforms.update()
         ground.draw(screen)
         ground.update()
-        fireman.draw(screen)
-        fireman.update()
+        demon.draw(screen)
+        demon.update()
 
         background_rect.x -= 1
 
@@ -406,15 +410,34 @@ while True:
             game_state['playing_oldman'] = False
             game_state['game_over'] = True
 
-        if Player.collision_player_fireman():
+        if Player.collision_player_demon():
+            transition(screen)
             game_state['playing_oldman'] = False
             game_state['hell'] = True
+            
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            player.empty()
+            rocks.empty()
+            platforms.empty()
+            ground.empty()
+            portal.empty()
+
+            player.add(Player(player_sprites['kid']))
+            ground.add(Ground(0))
+            ground.add(Ground(WIDTH))
 
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['hell']:
+        if next_track:
+            mixer.music.load('music/music_hell.mp3')
+            mixer.music.play()
+            next_track = False
+        
         screen.blit(background, background_rect)
+        screen.blit(background_2, background_2_rect)
+        
         screen.blit(score_text, score_rect)
 
         player.draw(screen)
@@ -426,7 +449,13 @@ while True:
         ground.draw(screen)
         ground.update()
 
+        if background_rect.x <= -background_rect.width:
+            background_rect.x = WIDTH
+        elif background_2_rect.x <= -background_2_rect.width:
+            background_2_rect.x = WIDTH
+            
         background_rect.x -= 1
+        background_2_rect.x -= 1
 
         if Player.collision_player_rocks():
             game_state['hell'] = False
@@ -442,7 +471,7 @@ while True:
         platforms.empty()
         ground.empty()
         portal.empty()
-        fireman.empty()
+        demon.empty()
 
         # Fill the screen with a color
         screen.fill((94, 129, 162))
@@ -480,7 +509,7 @@ while True:
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
             portal.add(Portal())
-            fireman.add(Fireman())
+            demon.add(Demon())
 
 
     pygame.display.flip()
