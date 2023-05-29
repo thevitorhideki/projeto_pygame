@@ -23,25 +23,20 @@ player_name = ''
 player_sprites = {
     'kid': ['assets/kid/player1.png', 'assets/kid/player2.png'],
     'man': ['assets/man/player1.png', 'assets/man/player2.png'],
-    'oldman': ['assets/oldman/player1.png', 'assets/oldman/player2.png']
+    'oldman': ['assets/oldman/player1.png', 'assets/oldman/player2.png'],
+    'skeleton': ['assets/skeleton/skeleton1.png', 'assets/skeleton/skeleton2.png'],
 }
 
-# Music
+# Music #
 
-#Instantiate mixer
+# Instantiate mixer
 mixer.init()
-
-#Load audio file
+# Load audio file
 mixer.music.load('music/music.mp3')
-
-#Set preferred volume
+# Set preferred volume
 mixer.music.set_volume(0.4)
-
-#Loop
+# Play with loop
 mixer.music.play(-1)
-
-#Play the music
-mixer.music.play()
 
 next_track = True
 
@@ -129,7 +124,7 @@ class Player(pygame.sprite.Sprite):
     def collision_player_rocks():
         # Checks if the player is colliding with a rock
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
-            return True
+            pass
         
     def collision_player_portal():
         # Checks if the player is colliding with the portal
@@ -302,6 +297,7 @@ while True:
     elif game_state['playing_kid']:
         # Draw the background, score, tree, player, platforms, rocks and ground on the screen
         screen.blit(background, background_rect)
+        screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
         tree.draw(screen)
         tree.update()
@@ -319,10 +315,16 @@ while True:
         portal.draw(screen)
         portal.update()
 
+        if background_2_rect.topright[0] == WIDTH:
+            background_rect.x = WIDTH
+        elif background_rect.topright[0] == WIDTH:
+            background_2_rect.x = WIDTH
+
         # Move the sky background and the game name to the left
         background_rect.x -= 1
+        background_2_rect.x -= 1
         game_name_rect.x -= 1
-
+        
         # Check if the player collides with a rock or the background ends, if he does, stop the game
         if Player.collision_player_rocks():
             game_state['playing_kid'] = False
@@ -351,6 +353,7 @@ while True:
 
     elif game_state['playing_man']:
         screen.blit(background, background_rect)
+        screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
 
         player.draw(screen)
@@ -364,7 +367,13 @@ while True:
         portal.draw(screen)
         portal.update()
 
+        if background_2_rect.topright[0] == WIDTH:
+            background_rect.x = WIDTH
+        elif background_rect.topright[0] == WIDTH:
+            background_2_rect.x = WIDTH
+
         background_rect.x -= 1
+        background_2_rect.x -= 1
 
         if Player.collision_player_rocks():
             game_state['playing_man'] = False
@@ -391,6 +400,7 @@ while True:
 
     elif game_state['playing_oldman']:
         screen.blit(background, background_rect)
+        screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
 
         player.draw(screen)
@@ -404,7 +414,13 @@ while True:
         demon.draw(screen)
         demon.update()
 
+        if background_2_rect.topright[0] == WIDTH:
+            background_rect.x = WIDTH
+        elif background_rect.topright[0] == WIDTH:
+            background_2_rect.x = WIDTH
+
         background_rect.x -= 1
+        background_2_rect.x -= 1
 
         if Player.collision_player_rocks():
             game_state['playing_oldman'] = False
@@ -422,7 +438,7 @@ while True:
             ground.empty()
             portal.empty()
 
-            player.add(Player(player_sprites['kid']))
+            player.add(Player(player_sprites['skeleton']))
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
 
@@ -449,9 +465,9 @@ while True:
         ground.draw(screen)
         ground.update()
 
-        if background_rect.x <= -background_rect.width:
+        if background_2_rect.topright[0] == WIDTH:
             background_rect.x = WIDTH
-        elif background_2_rect.x <= -background_2_rect.width:
+        elif background_rect.topright[0] == WIDTH:
             background_2_rect.x = WIDTH
             
         background_rect.x -= 1
