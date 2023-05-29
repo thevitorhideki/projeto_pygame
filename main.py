@@ -15,22 +15,23 @@ pygame.init()
 # Nome do jogador
 player_name = ''
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         # Load player sprites and scale
         player_1 = pygame.image.load('assets/kid/player1.png').convert_alpha()
         player_2 = pygame.image.load('assets/kid/player2.png').convert_alpha()
-        
+
         # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
         self.player_index = 0
         self.image = self.player_walk[self.player_index]
-        self.rect = self.image.get_rect(midbottom = (100,620))
-        
+        self.rect = self.image.get_rect(midbottom=(100, 620))
+
         # Load player jump sprite and scale
         # self.player_jump = pygame.image.load('assets/kid/player1.png').convert_alpha()
-        
+
         self.gravity = 1
         self.speedy = 0
         self.jump_bool = False
@@ -38,41 +39,41 @@ class Player(pygame.sprite.Sprite):
     def isCollidingPlatform(self, platforms):
         # Checks if the player is colliding with a platform
         platforms_hit = pygame.sprite.spritecollide(self, platforms, False)
-        for platform in platforms_hit: 
-            if self.rect.colliderect(platform.rect): 
+        for platform in platforms_hit:
+            if self.rect.colliderect(platform.rect):
                 # Returns witch platform the player is colliding with
                 return platform
         return False
-    
+
     def isCollidingGround(self, ground):
         # Checks if the player is colliding with the ground
         for g in ground:
             if self.rect.colliderect(g.rect):
                 return True
         return False
-    
+
     def jump(self):
         # Verify if player press space and he's not jumping if both are true, jump
         if keys[pygame.K_SPACE] and self.jump_bool == False:
             self.speedy -= 20
             self.jump_bool = True
-    
+
     def apply_gravity(self):
         # If Player is in the air and the space key is pressed, apply the glide effect.
         if keys[pygame.K_SPACE] and self.speedy >= 0:
             self.gravity = 0.1
         else:
             self.gravity = 1
-            
+
         # Gravity effect
         self.speedy += self.gravity
         self.rect.y += self.speedy
-        
+
         if self.rect.bottom > 620:
             self.rect.bottom = 620
             self.speedy = 0
             self.jump_bool = False
-        
+
         if self.isCollidingPlatform(platforms):
             platform = self.isCollidingPlatform(platforms)
             # Checks if the player is colliding with a platform and if he is, checks if he is falling or jumping
@@ -83,27 +84,28 @@ class Player(pygame.sprite.Sprite):
                 self.speedy = 0
             elif self.speedy < 0:
                 # If player is jumping, stop him from jumping and set his position to the bottom of the platform
-                self.rect.top = platform.rect.bottom 
+                self.rect.top = platform.rect.bottom
                 self.speedy = 0
-        
-    
+
     def animation_state(self):
         # If player is not in the air, play the walking animation
         if self.speedy == 0:
             self.player_index += 0.1
-            self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
+            self.image = self.player_walk[int(
+                self.player_index % len(self.player_walk))]
         # else:
         #     self.image = self.player_jump
-    
+
     def collision_player_rocks():
         # Checks if the player is colliding with a rock
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
-        
+
     def update(self):
         self.apply_gravity()
         self.jump()
         self.animation_state()
+
 
 # Window settings
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -113,7 +115,7 @@ clock = pygame.time.Clock()
 font_pixel = pygame.font.Font('font/Pixeltype.ttf', 50)
 font_blox = pygame.font.Font('font/blox-brk.regular.ttf', 75)
 
-# Player Group
+# Player, tree and ground groups
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
@@ -122,7 +124,8 @@ tree.add(Tree())
 ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
-game_state = {'playing': False, 'game_over': False, 'menu': False, 'player_name': True}
+game_state = {'playing': False, 'game_over': False,
+              'menu': False, 'player_name': True}
 
 # Pontuação
 score = 0
@@ -130,108 +133,6 @@ save = True
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
 
-
-while game_state['player_name']:
-
-    for event in pygame.event.get():
-        # Check if the player clicks the X button
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-
-
-    game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
-    game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
-    screen.blit(game_name, game_name_rect)
-    
-
-    background = pygame.image.load('assets/sky.png').convert_alpha()
-    background_rect = background.get_rect(bottomleft=(0, 800))
-    screen.blit(background, background_rect)
-    
-    ground.draw(screen)
-    
-    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
-    player_stand_rect = player_stand.get_rect(midbottom = (100,620))
-    screen.blit(player_stand, player_stand_rect)
-    
-    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
-    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
-    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,620))
-    screen.blit(tree_stand, tree_stand_rect)
-    
-    start_text = font_pixel.render(f"Enter your name: {player_name}", True, (255, 255, 255))
-    start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-    screen.blit(start_text, start_rect)
-
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                game_state['player_name']=False
-                game_state['menu']=True
-            elif event.key == pygame.K_BACKSPACE:
-                player_name = player_name[:-1]
-            else:
-                player_name += event.unicode
-
-        pygame.display.update()
-        clock.tick(60)
-    pygame.display.update()
-    clock.tick(60)
-
-while game_state['menu']:
-    # Read the scoreboard file
-    scoreboard = pd.read_csv('scoreboard.csv')
-    
-    # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
-    keys = pygame.key.get_pressed()
-    
-    for event in pygame.event.get():
-        # Check if the player clicks the X button
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-    
-    background = pygame.image.load('assets/sky.png').convert_alpha()
-    background_rect = background.get_rect(bottomleft=(0, 800))
-    screen.blit(background, background_rect)
-    
-    ground.draw(screen)
-    
-    player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
-    player_stand_rect = player_stand.get_rect(midbottom = (100,620))
-    screen.blit(player_stand, player_stand_rect)
-    
-    tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
-    tree_stand = pygame.transform.scale(tree_stand, (150, 150))
-    tree_stand_rect = tree_stand.get_rect(bottomleft = (0,620))
-    screen.blit(tree_stand, tree_stand_rect)
-    
-    start_text = font_pixel.render(f"Press SPACE to START", True, (255, 255, 255))
-    start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 320))
-    screen.blit(start_text, start_text_rect)
-    
-    game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
-    game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
-    screen.blit(game_name, game_name_rect)
-    
-    leaderboard_text = font_pixel.render(f"Leaderboard:", True, (255, 255, 255))
-    leaderboard_rect = leaderboard_text.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 125))
-    screen.blit(leaderboard_text, leaderboard_rect)
-    
-    for i in range(3):
-        leaderboard = font_pixel.render(f"{i+1}: {scoreboard['Name'][i]} - {scoreboard['Score'][i]}pts", True, (255, 255, 255))
-        leaderboard_rect = leaderboard.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 75 + i*50))
-        screen.blit(leaderboard, leaderboard_rect)
-    
-    # Check if the player clicks the space key
-    if keys[pygame.K_SPACE]:
-        # If he does, start the game
-        game_state['playing'] = True
-        game_state['menu'] = False
-    
-    pygame.display.flip()
-    clock.tick(60)
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
@@ -243,10 +144,10 @@ pygame.time.set_timer(rocks_timer, 1800)
 while True:
     # Read the scoreboard file
     scoreboard = pd.read_csv('scoreboard.csv')
-    
+
     # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
     keys = pygame.key.get_pressed()
-    
+
     for event in pygame.event.get():
         # Check if the player clicks the X button
         if event.type == pygame.QUIT:
@@ -257,8 +158,90 @@ while True:
             platforms.add(Platforms())
         if event.type == rocks_timer and game_state['playing']:
             rocks.add(Rocks())
-    
-    if game_state['playing']:
+        # Get the input from the player and save it in the variable player_name
+        if event.type == pygame.KEYDOWN and game_state['player_name']:
+            if event.key == pygame.K_RETURN:
+                game_state['player_name'] = False
+                game_state['menu'] = True
+            elif event.key == pygame.K_BACKSPACE:
+                player_name = player_name[:-1]
+            else:
+                player_name += event.unicode
+
+    if game_state['player_name']:
+        # Draw the game name on the screen
+        game_name = font_blox.render(
+            "EXISTENTIAL CRISIS", True, (255, 255, 255))
+        game_name_rect = game_name.get_rect(
+            center=((WIDTH / 2), HEIGHT / 2 - 250))
+        screen.blit(game_name, game_name_rect)
+
+        # Draw the background
+        background = pygame.image.load('assets/sky.png').convert_alpha()
+        background_rect = background.get_rect(bottomleft=(0, 800))
+        screen.blit(background, background_rect)
+
+        # Draw the ground
+        ground.draw(screen)
+
+        # Load the player and tree images and draw them on the screen
+        player_stand = pygame.image.load(
+            'assets/kid/player_stand.png').convert_alpha()
+        player_stand_rect = player_stand.get_rect(midbottom=(100, 620))
+        screen.blit(player_stand, player_stand_rect)
+
+        tree_stand = pygame.image.load('assets/tree.png').convert_alpha()
+        tree_stand = pygame.transform.scale(tree_stand, (150, 150))
+        tree_stand_rect = tree_stand.get_rect(bottomleft=(0, 620))
+        screen.blit(tree_stand, tree_stand_rect)
+
+        # Draw the text box
+        start_text = font_pixel.render(
+            f"Enter your name: {player_name}", True, (255, 255, 255))
+        start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+        screen.blit(start_text, start_rect)
+
+    elif game_state['menu']:
+        # Clear the rocks and platforms groups to avoid bugs
+        rocks.empty()
+        platforms.empty()
+
+        # Draw the stuff on the screen
+        screen.blit(background, background_rect)
+        ground.draw(screen)
+        screen.blit(player_stand, player_stand_rect)
+        screen.blit(tree_stand, tree_stand_rect)
+        screen.blit(game_name, game_name_rect)
+
+        # Draw the start text on the screen
+        start_text = font_pixel.render(
+            f"Press SPACE to START", True, (255, 255, 255))
+        start_text_rect = start_text.get_rect(
+            center=((WIDTH / 2), HEIGHT / 2 + 320))
+        screen.blit(start_text, start_text_rect)
+
+        # Draw the leaderboard on the screen
+        leaderboard_text = font_pixel.render(
+            f"Leaderboard:", True, (255, 255, 255))
+        leaderboard_rect = leaderboard_text.get_rect(
+            topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 125))
+        screen.blit(leaderboard_text, leaderboard_rect)
+
+        # Logic to get the top 3 scores their names to draw on the screen
+        for i in range(3):
+            leaderboard = font_pixel.render(
+                f"{i+1}: {scoreboard['Name'][i]} - {scoreboard['Score'][i]}pts", True, (255, 255, 255))
+            leaderboard_rect = leaderboard.get_rect(
+                topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 75 + i*50))
+            screen.blit(leaderboard, leaderboard_rect)
+
+        # Check if the player clicks the space key
+        if keys[pygame.K_SPACE]:
+            # If he does, start the game
+            game_state['playing'] = True
+            game_state['menu'] = False
+
+    elif game_state['playing']:
         save = True
         # Draw the background, score, tree, player, platforms, rocks and ground on the screen
         screen.blit(background, background_rect)
@@ -273,11 +256,11 @@ while True:
         rocks.update()
         ground.draw(screen)
         ground.update()
-    
+
         # Draw the game name on the screen only if it is on the screen
         if game_name_rect.right >= 0:
             screen.blit(game_name, game_name_rect)
-        
+
         # Move the sky background and the game name to the left
         background_rect.x -= 1
         game_name_rect.x -= 1
@@ -286,50 +269,58 @@ while True:
         if Player.collision_player_rocks() or background_rect.right <= WIDTH:
             game_state['playing'] = False
             game_state['game_over'] = True
-        
+
         # Update the score
         score += 0.2
-        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
+        score_text = font_pixel.render(
+            "Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
-    if game_state['game_over']:
+
+    elif game_state['game_over']:
         # Clear all the sprites
         player.empty()
         rocks.empty()
         platforms.empty()
         ground.empty()
-        
+
         # Fill the screen with a color
-        screen.fill((94,129,162))
+        screen.fill((94, 129, 162))
         background_rect.x = 0
         game_name_rect.center = (WIDTH / 2, HEIGHT / 2 - 250)
-        
+
         # Save the best score in a csv
         if save:
             if player_name not in scoreboard['Name'].values:
                 scoreboard.loc[len(scoreboard)] = [player_name, floor(score)]
             elif player_name in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == player_name]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] == player_name, 'Score'] = floor(score)
+                scoreboard.loc[scoreboard['Name'] ==
+                               player_name, 'Score'] = floor(score)
             scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
-                
+
             scoreboard.to_csv('scoreboard.csv', index=False)
             save = False
-            
+
         # Show the game over text and the score
         game_over_text = font_pixel.render("Game Over", True, (255, 255, 255))
-        game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        game_over_rect = game_over_text.get_rect(
+            center=(WIDTH / 2, HEIGHT / 2))
         screen.blit(game_over_text, game_over_rect)
         screen.blit(score_text, score_rect)
 
         # Best Score
         best_score = scoreboard.loc[scoreboard['Name'] == player_name, 'Score']
-        your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
-        best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
+        your_best_score = font_pixel.render(
+            "Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
+        best_score_rect = your_best_score.get_rect(
+            center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
 
         # Overall Best Score
         overall_best_score = scoreboard['Score'].max()
-        overall_best_score_text = font_pixel.render("Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
-        overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
+        overall_best_score_text = font_pixel.render(
+            "Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
+        overall_best_score_rect = overall_best_score_text.get_rect(
+            center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
         # If the player press space, restart the game
@@ -340,6 +331,6 @@ while True:
             player.add(Player())
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
-    
+
     pygame.display.flip()
     clock.tick(60)
