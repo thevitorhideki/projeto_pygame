@@ -1,5 +1,6 @@
 import random
 import pygame
+from pygame import mixer
 import pandas as pd
 from math import floor
 from sys import exit
@@ -23,6 +24,20 @@ player_sprites = {
     'man': ['assets/man/player1.png', 'assets/man/player2.png'],
     'oldman': ['assets/oldman/player1.png', 'assets/oldman/player2.png']
 }
+
+# Music
+
+#Instantiate mixer
+mixer.init()
+
+#Load audio file
+mixer.music.load('music/music.mp3')
+
+#Set preferred volume
+mixer.music.set_volume(0.2)
+
+#Play the music
+mixer.music.play()
 
 
 class Player(pygame.sprite.Sprite):
