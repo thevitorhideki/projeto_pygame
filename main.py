@@ -10,6 +10,7 @@ from platforms import Platforms, platforms
 from rocks import Rocks, rocks
 
 from settings import WIDTH, HEIGHT
+from utils import save_score
 
 pygame.init()
 
@@ -134,7 +135,6 @@ game_state = {
 
 # Pontuação
 score = 0
-save = True
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
 
@@ -172,9 +172,13 @@ while True:
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
             if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                # If the player doesn't type anything, the name will be qwerty + bug prevention
+                if player_name == '':
+                    player_name = 'qwerty'
                 game_state['player_name'] = False
                 game_state['menu'] = True
             elif event.key == pygame.K_BACKSPACE:
+                # If the player press backspace, delete the last character from the player_name variable
                 player_name = player_name[:-1]
             else:
                 player_name += event.unicode
@@ -295,15 +299,7 @@ while True:
         game_name_rect.center = (WIDTH / 2, HEIGHT / 2 - 250)
 
         # Save the best score in a csv
-        if save:
-            if player_name not in scoreboard['Name'].values:
-                scoreboard.loc[len(scoreboard)] = [player_name, floor(score)]
-            elif player_name in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == player_name]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] == player_name, 'Score'] = floor(score)
-            scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
-
-            scoreboard.to_csv('scoreboard.csv', index=False)
-            save = False
+        save_score(player_name, score, scoreboard)
 
         # Show the game over text and the score
         game_over_text = font_pixel.render("Game Over", True, (255, 255, 255))
