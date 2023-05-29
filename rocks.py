@@ -4,13 +4,13 @@ from random import randint
 from settings import WIDTH, HEIGHT
 
 class Rocks(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, x_pos, y_pos):
         super().__init__()
         rock = pygame.image.load('assets/rock.png').convert_alpha()
         self.image = rock
         
         # Positioning the platform sprite on a random y axis
-        self.rect = self.image.get_rect(bottomleft = (randint(WIDTH, WIDTH + 200), 620))
+        self.rect = self.image.get_rect(bottomleft = (x_pos, y_pos))
     
     def destroy(self):
         # Destroy platform if it goes off screen

@@ -1,3 +1,4 @@
+import random
 import pygame
 import pandas as pd
 from math import floor
@@ -124,8 +125,12 @@ tree.add(Tree())
 ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
-game_state = {'playing': False, 'game_over': False,
-              'menu': False, 'player_name': True}
+game_state = {
+    'playing': False, 
+    'game_over': False,
+    'menu': False, 
+    'player_name': True
+}
 
 # Pontuação
 score = 0
@@ -155,12 +160,18 @@ while True:
             exit()
         # Platform and rock timers
         if event.type == platform_timer and game_state['playing']:
-            platforms.add(Platforms())
+            x_pos = random.randint(WIDTH, WIDTH + 200)
+            y_pos = random.randint(300, 450)
+            
+            rocks.add(Rocks(x_pos, y_pos - 20))
+            
+            platforms.add(Platforms(WIDTH, y_pos))
+            platforms.add(Platforms(WIDTH + 128, y_pos))
         if event.type == rocks_timer and game_state['playing']:
-            rocks.add(Rocks())
+            rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620))
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
-            if event.key == pygame.K_RETURN:
+            if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                 game_state['player_name'] = False
                 game_state['menu'] = True
             elif event.key == pygame.K_BACKSPACE:
@@ -181,8 +192,6 @@ while True:
         background_rect = background.get_rect(bottomleft=(0, 800))
         screen.blit(background, background_rect)
 
-        # Draw the ground
-        ground.draw(screen)
 
         # Load the player and tree images and draw them on the screen
         player_stand = pygame.image.load(
@@ -195,11 +204,13 @@ while True:
         tree_stand_rect = tree_stand.get_rect(bottomleft=(0, 620))
         screen.blit(tree_stand, tree_stand_rect)
 
+        # Draw the ground
+        ground.draw(screen)
+        
         # Draw the text box
-        start_text = font_pixel.render(
-            f"Enter your name: {player_name}", True, (255, 255, 255))
-        start_rect = start_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-        screen.blit(start_text, start_rect)
+        name_text = font_pixel.render(f"Enter your name: {player_name}", True, (255, 255, 255))
+        name_text_rect = name_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+        screen.blit(name_text, name_text_rect)
 
     elif game_state['menu']:
         # Clear the rocks and platforms groups to avoid bugs
@@ -208,10 +219,10 @@ while True:
 
         # Draw the stuff on the screen
         screen.blit(background, background_rect)
-        ground.draw(screen)
         screen.blit(player_stand, player_stand_rect)
         screen.blit(tree_stand, tree_stand_rect)
         screen.blit(game_name, game_name_rect)
+        ground.draw(screen)
 
         # Draw the start text on the screen
         start_text = font_pixel.render(
@@ -221,18 +232,15 @@ while True:
         screen.blit(start_text, start_text_rect)
 
         # Draw the leaderboard on the screen
-        leaderboard_text = font_pixel.render(
-            f"Leaderboard:", True, (255, 255, 255))
-        leaderboard_rect = leaderboard_text.get_rect(
-            topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 125))
+        leaderboard_text = font_pixel.render(f"Leaderboard:", True, (255, 255, 255))
+        leaderboard_rect = leaderboard_text.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 125))
         screen.blit(leaderboard_text, leaderboard_rect)
 
         # Logic to get the top 3 scores their names to draw on the screen
         for i in range(3):
             leaderboard = font_pixel.render(
                 f"{i+1}: {scoreboard['Name'][i]} - {scoreboard['Score'][i]}pts", True, (255, 255, 255))
-            leaderboard_rect = leaderboard.get_rect(
-                topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 75 + i*50))
+            leaderboard_rect = leaderboard.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 75 + i*50))
             screen.blit(leaderboard, leaderboard_rect)
 
         # Check if the player clicks the space key
@@ -248,18 +256,17 @@ while True:
         screen.blit(score_text, score_rect)
         tree.draw(screen)
         tree.update()
-        player.draw(screen)
-        player.update()
-        platforms.draw(screen)
-        platforms.update()
-        rocks.draw(screen)
-        rocks.update()
-        ground.draw(screen)
-        ground.update()
-
         # Draw the game name on the screen only if it is on the screen
         if game_name_rect.right >= 0:
             screen.blit(game_name, game_name_rect)
+        player.draw(screen)
+        player.update()
+        rocks.draw(screen)
+        rocks.update()
+        platforms.draw(screen)
+        platforms.update()
+        ground.draw(screen)
+        ground.update()
 
         # Move the sky background and the game name to the left
         background_rect.x -= 1
@@ -272,8 +279,7 @@ while True:
 
         # Update the score
         score += 0.2
-        score_text = font_pixel.render(
-            "Score: " + str(floor(score)), True, (255, 255, 255))
+        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
 
     elif game_state['game_over']:
@@ -293,8 +299,7 @@ while True:
             if player_name not in scoreboard['Name'].values:
                 scoreboard.loc[len(scoreboard)] = [player_name, floor(score)]
             elif player_name in scoreboard['Name'].values and score > scoreboard[scoreboard['Name'] == player_name]['Score'].values[0]:
-                scoreboard.loc[scoreboard['Name'] ==
-                               player_name, 'Score'] = floor(score)
+                scoreboard.loc[scoreboard['Name'] == player_name, 'Score'] = floor(score)
             scoreboard = scoreboard.sort_values(by=['Score'], ascending=False)
 
             scoreboard.to_csv('scoreboard.csv', index=False)
@@ -302,15 +307,13 @@ while True:
 
         # Show the game over text and the score
         game_over_text = font_pixel.render("Game Over", True, (255, 255, 255))
-        game_over_rect = game_over_text.get_rect(
-            center=(WIDTH / 2, HEIGHT / 2))
+        game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
         screen.blit(game_over_text, game_over_rect)
         screen.blit(score_text, score_rect)
 
         # Best Score
         best_score = scoreboard.loc[scoreboard['Name'] == player_name, 'Score']
-        your_best_score = font_pixel.render(
-            "Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
+        your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
         best_score_rect = your_best_score.get_rect(
             center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
@@ -319,8 +322,7 @@ while True:
         overall_best_score = scoreboard['Score'].max()
         overall_best_score_text = font_pixel.render(
             "Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
-        overall_best_score_rect = overall_best_score_text.get_rect(
-            center=((WIDTH / 2), HEIGHT / 2 + 250))
+        overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
         # If the player press space, restart the game
