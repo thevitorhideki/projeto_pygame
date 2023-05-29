@@ -8,7 +8,7 @@ from tree import Tree, tree
 from ground import Ground, ground
 from platforms import Platforms, platforms
 from rocks import Rocks, rocks
-from time_machine import TimeMachine, time_machine
+from portal import Portal, portal
 
 from settings import WIDTH, HEIGHT
 from utils import save_score
@@ -112,7 +112,7 @@ class Player(pygame.sprite.Sprite):
         
     def collision_player_time_machine():
         # Checks if the player is colliding with a time machine
-        if pygame.sprite.spritecollide(player.sprite, time_machine, False):
+        if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
 
     def update(self):
@@ -137,7 +137,7 @@ tree.add(Tree())
 ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
-time_machine.add(TimeMachine())
+portal.add(Portal())
 
 game_state = {
     'playing_kid': False,
@@ -279,8 +279,8 @@ while True:
         platforms.update()
         ground.draw(screen)
         ground.update()
-        time_machine.draw(screen)
-        time_machine.update()
+        portal.draw(screen)
+        portal.update()
 
         # Move the sky background and the game name to the left
         background_rect.x -= 1
@@ -299,12 +299,12 @@ while True:
             rocks.empty()
             platforms.empty()
             ground.empty()
-            time_machine.empty()
+            portal.empty()
 
             player.add(Player(player_sprites['man']))
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
-            time_machine.add(TimeMachine())
+            portal.add(Portal())
 
         # Update the score
         score += 0.2
@@ -323,8 +323,8 @@ while True:
         platforms.update()
         ground.draw(screen)
         ground.update()
-        time_machine.draw(screen)
-        time_machine.update()
+        portal.draw(screen)
+        portal.update()
 
         background_rect.x -= 1
 
@@ -340,7 +340,7 @@ while True:
             rocks.empty()
             platforms.empty()
             ground.empty()
-            time_machine.empty()
+            portal.empty()
 
             player.add(Player(player_sprites['oldman']))
             ground.add(Ground(0))
@@ -379,7 +379,7 @@ while True:
         rocks.empty()
         platforms.empty()
         ground.empty()
-        time_machine.empty()
+        portal.empty()
 
         # Fill the screen with a color
         screen.fill((94, 129, 162))
@@ -416,7 +416,7 @@ while True:
             player.add(Player(player_sprites['kid']))
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
-            time_machine.add(TimeMachine())
+            portal.add(Portal())
 
     pygame.display.flip()
     clock.tick(60)
