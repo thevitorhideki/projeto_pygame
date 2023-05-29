@@ -17,13 +17,19 @@ pygame.init()
 # Nome do jogador
 player_name = ''
 
+player_sprites = {
+    'kid': ['assets/kid/player1.png', 'assets/kid/player2.png'],
+    'man': ['assets/man/player1.png', 'assets/man/player2.png'],
+    'oldman': ['assets/oldman/player1.png', 'assets/oldman/player2.png']
+}
+
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, player_type):
         super().__init__()
         # Load player sprites and scale
-        player_1 = pygame.image.load('assets/kid/player1.png').convert_alpha()
-        player_2 = pygame.image.load('assets/kid/player2.png').convert_alpha()
+        player_1 = pygame.image.load(player_type[0]).convert_alpha()
+        player_2 = pygame.image.load(player_type[1]).convert_alpha()
 
         # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
@@ -119,7 +125,7 @@ font_blox = pygame.font.Font('font/blox-brk.regular.ttf', 75)
 
 # Player, tree and ground groups
 player = pygame.sprite.GroupSingle()
-player.add(Player())
+player.add(Player(player_sprites['kid']))
 
 tree.add(Tree())
 
@@ -137,7 +143,6 @@ game_state = {
 score = 0
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
-
 
 # Timers
 platform_timer = pygame.USEREVENT + 1
@@ -185,10 +190,8 @@ while True:
 
     if game_state['player_name']:
         # Draw the game name on the screen
-        game_name = font_blox.render(
-            "EXISTENTIAL CRISIS", True, (255, 255, 255))
-        game_name_rect = game_name.get_rect(
-            center=((WIDTH / 2), HEIGHT / 2 - 250))
+        game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
+        game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
         screen.blit(game_name, game_name_rect)
 
         # Draw the background
@@ -198,8 +201,7 @@ while True:
 
 
         # Load the player and tree images and draw them on the screen
-        player_stand = pygame.image.load(
-            'assets/kid/player_stand.png').convert_alpha()
+        player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
         player_stand_rect = player_stand.get_rect(midbottom=(100, 620))
         screen.blit(player_stand, player_stand_rect)
 
@@ -229,10 +231,8 @@ while True:
         ground.draw(screen)
 
         # Draw the start text on the screen
-        start_text = font_pixel.render(
-            f"Press SPACE to START", True, (255, 255, 255))
-        start_text_rect = start_text.get_rect(
-            center=((WIDTH / 2), HEIGHT / 2 + 320))
+        start_text = font_pixel.render(f"Press SPACE to START", True, (255, 255, 255))
+        start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 320))
         screen.blit(start_text, start_text_rect)
 
         # Draw the leaderboard on the screen
@@ -254,7 +254,6 @@ while True:
             game_state['menu'] = False
 
     elif game_state['playing']:
-        save = True
         # Draw the background, score, tree, player, platforms, rocks and ground on the screen
         screen.blit(background, background_rect)
         screen.blit(score_text, score_rect)
@@ -310,8 +309,7 @@ while True:
         # Best Score
         best_score = scoreboard.loc[scoreboard['Name'] == player_name, 'Score']
         your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
-        best_score_rect = your_best_score.get_rect(
-            center=(WIDTH / 2, HEIGHT / 2 + 50))
+        best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
 
         # Overall Best Score

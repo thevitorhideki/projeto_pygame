@@ -1,7 +1,4 @@
 import pygame
-from random import randint
-
-from settings import WIDTH, HEIGHT
 
 class Tree(pygame.sprite.Sprite):
     def __init__(self):

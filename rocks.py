@@ -1,7 +1,4 @@
 import pygame
-from random import randint
-
-from settings import WIDTH, HEIGHT
 
 class Rocks(pygame.sprite.Sprite):
     def __init__(self, x_pos, y_pos):
