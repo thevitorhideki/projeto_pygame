@@ -37,6 +37,9 @@ mixer.music.load('music/music.mp3')
 #Set preferred volume
 mixer.music.set_volume(0.4)
 
+#Loop
+mixer.music.play(-1)
+
 #Play the music
 mixer.music.play()
 
