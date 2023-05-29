@@ -1,5 +1,6 @@
 import random
 import pygame
+from pygame import mixer
 import pandas as pd
 from math import floor
 from sys import exit
@@ -23,6 +24,20 @@ player_sprites = {
     'man': ['assets/man/player1.png', 'assets/man/player2.png'],
     'oldman': ['assets/oldman/player1.png', 'assets/oldman/player2.png']
 }
+
+# Music
+
+#Instantiate mixer
+mixer.init()
+
+#Load audio file
+mixer.music.load('music/music.mp3')
+
+#Set preferred volume
+mixer.music.set_volume(0.4)
+
+#Play the music
+mixer.music.play()
 
 
 class Player(pygame.sprite.Sprite):
@@ -147,6 +162,14 @@ game_state = {
     'menu': False, 
     'player_name': True
 }
+
+def transition(screen):
+    fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    for alpha in range(0, 255, 5):  # Decrease alpha value
+        fade_surface.fill((0, 0, 0, alpha))  # Fill with black and alpha value
+        screen.blit(fade_surface, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(30)  # Delay for smoother effect
 
 # Pontuação
 score = 0
@@ -292,6 +315,7 @@ while True:
             game_state['game_over'] = True
         
         if Player.collision_player_time_machine():
+            transition(screen)
             game_state['playing_kid'] = False
             game_state['playing_man'] = True
             background_rect = background.get_rect(bottomleft=(0, 800))
@@ -333,6 +357,7 @@ while True:
             game_state['game_over'] = True
 
         if Player.collision_player_time_machine():
+            transition(screen)
             game_state['playing_man'] = False
             game_state['playing_oldman'] = True
             background_rect = background.get_rect(bottomleft=(0, 800))
