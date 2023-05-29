@@ -10,6 +10,7 @@ from ground import Ground, ground
 from platforms import Platforms, platforms
 from rocks import Rocks, rocks
 from portal import Portal, portal
+from fireman import Fireman, fireman
 
 from settings import WIDTH, HEIGHT
 from utils import save_score
@@ -129,6 +130,10 @@ class Player(pygame.sprite.Sprite):
         # Checks if the player is colliding with a time machine
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
+        
+    def collision_player_fireman():
+        if pygame.sprite.spritecollide(player.sprite, fireman, False):
+            return True
 
     def update(self):
         self.apply_gravity()
@@ -153,11 +158,13 @@ ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
 portal.add(Portal())
+fireman.add(Fireman())
 
 game_state = {
     'playing_kid': False,
     'playing_man': False,
     'playing_oldman': False, 
+    'hell': False,
     'game_over': False,
     'menu': False, 
     'player_name': True
@@ -387,6 +394,8 @@ while True:
         platforms.update()
         ground.draw(screen)
         ground.update()
+        fireman.draw(screen)
+        fireman.update()
 
         background_rect.x -= 1
 
@@ -394,9 +403,34 @@ while True:
             game_state['playing_oldman'] = False
             game_state['game_over'] = True
 
+        if Player.collision_player_fireman():
+            game_state['playing_oldman'] = False
+            game_state['hell'] = True
+
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
+    elif game_state['hell']:
+        screen.blit(background, background_rect)
+        screen.blit(score_text, score_rect)
+
+        player.draw(screen)
+        player.update()
+        rocks.draw(screen)
+        rocks.update()
+        platforms.draw(screen)
+        platforms.update()
+        ground.draw(screen)
+        ground.update()
+
+        background_rect.x -= 1
+
+        if Player.collision_player_rocks():
+            game_state['hell'] = False
+            game_state['game_over'] = True
+
+        score += 0.2
+        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['game_over']:
         # Clear all the sprites
@@ -405,6 +439,7 @@ while True:
         platforms.empty()
         ground.empty()
         portal.empty()
+        fireman.empty()
 
         # Fill the screen with a color
         screen.fill((94, 129, 162))
@@ -442,6 +477,8 @@ while True:
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
             portal.add(Portal())
+            fireman.add(Fireman())
+
 
     pygame.display.flip()
     clock.tick(60)
