@@ -8,6 +8,7 @@ from tree import Tree, tree
 from ground import Ground, ground
 from platforms import Platforms, platforms
 from rocks import Rocks, rocks
+from time_machine import TimeMachine, time_machine
 
 from settings import WIDTH, HEIGHT
 from utils import save_score
@@ -108,12 +109,16 @@ class Player(pygame.sprite.Sprite):
         # Checks if the player is colliding with a rock
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
+        
+    def collision_player_time_machine():
+        # Checks if the player is colliding with a time machine
+        if pygame.sprite.spritecollide(player.sprite, time_machine, False):
+            return True
 
     def update(self):
         self.apply_gravity()
         self.jump()
         self.animation_state()
-
 
 # Window settings
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -132,8 +137,12 @@ tree.add(Tree())
 ground.add(Ground(0))
 ground.add(Ground(WIDTH))
 
+time_machine.add(TimeMachine())
+
 game_state = {
-    'playing': False, 
+    'playing_kid': False,
+    'playing_man': False,
+    'playing_oldman': False, 
     'game_over': False,
     'menu': False, 
     'player_name': True
@@ -164,7 +173,7 @@ while True:
             pygame.quit()
             exit()
         # Platform and rock timers
-        if event.type == platform_timer and game_state['playing']:
+        if event.type == platform_timer and (game_state['playing_kid'] or game_state['playing_man'] or game_state['playing_oldman']):
             x_pos = random.randint(WIDTH, WIDTH + 200)
             y_pos = random.randint(300, 450)
             
@@ -172,7 +181,7 @@ while True:
             
             platforms.add(Platforms(WIDTH, y_pos))
             platforms.add(Platforms(WIDTH + 128, y_pos))
-        if event.type == rocks_timer and game_state['playing']:
+        if event.type == rocks_timer and (game_state['playing_kid'] or game_state['playing_man'] or game_state['playing_oldman']):
             rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620))
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
@@ -250,10 +259,10 @@ while True:
         # Check if the player clicks the space key
         if keys[pygame.K_SPACE]:
             # If he does, start the game
-            game_state['playing'] = True
+            game_state['playing_kid'] = True
             game_state['menu'] = False
 
-    elif game_state['playing']:
+    elif game_state['playing_kid']:
         # Draw the background, score, tree, player, platforms, rocks and ground on the screen
         screen.blit(background, background_rect)
         screen.blit(score_text, score_rect)
@@ -270,20 +279,99 @@ while True:
         platforms.update()
         ground.draw(screen)
         ground.update()
+        time_machine.draw(screen)
+        time_machine.update()
 
         # Move the sky background and the game name to the left
         background_rect.x -= 1
         game_name_rect.x -= 1
 
         # Check if the player collides with a rock or the background ends, if he does, stop the game
-        if Player.collision_player_rocks() or background_rect.right <= WIDTH:
-            game_state['playing'] = False
+        if Player.collision_player_rocks():
+            game_state['playing_kid'] = False
             game_state['game_over'] = True
+        
+        if Player.collision_player_time_machine():
+            game_state['playing_kid'] = False
+            game_state['playing_man'] = True
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            player.empty()
+            rocks.empty()
+            platforms.empty()
+            ground.empty()
+            time_machine.empty()
+
+            player.add(Player(player_sprites['man']))
+            ground.add(Ground(0))
+            ground.add(Ground(WIDTH))
+            time_machine.add(TimeMachine())
 
         # Update the score
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
+
+    elif game_state['playing_man']:
+        screen.blit(background, background_rect)
+        screen.blit(score_text, score_rect)
+
+        player.draw(screen)
+        player.update()
+        rocks.draw(screen)
+        rocks.update()
+        platforms.draw(screen)
+        platforms.update()
+        ground.draw(screen)
+        ground.update()
+        time_machine.draw(screen)
+        time_machine.update()
+
+        background_rect.x -= 1
+
+        if Player.collision_player_rocks():
+            game_state['playing_man'] = False
+            game_state['game_over'] = True
+
+        if Player.collision_player_time_machine():
+            game_state['playing_man'] = False
+            game_state['playing_oldman'] = True
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            player.empty()
+            rocks.empty()
+            platforms.empty()
+            ground.empty()
+            time_machine.empty()
+
+            player.add(Player(player_sprites['oldman']))
+            ground.add(Ground(0))
+            ground.add(Ground(WIDTH))
+
+        score += 0.2
+        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
+
+
+    elif game_state['playing_oldman']:
+        screen.blit(background, background_rect)
+        screen.blit(score_text, score_rect)
+
+        player.draw(screen)
+        player.update()
+        rocks.draw(screen)
+        rocks.update()
+        platforms.draw(screen)
+        platforms.update()
+        ground.draw(screen)
+        ground.update()
+
+        background_rect.x -= 1
+
+        if Player.collision_player_rocks():
+            game_state['playing_oldman'] = False
+            game_state['game_over'] = True
+
+        score += 0.2
+        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
+
 
     elif game_state['game_over']:
         # Clear all the sprites
@@ -291,6 +379,7 @@ while True:
         rocks.empty()
         platforms.empty()
         ground.empty()
+        time_machine.empty()
 
         # Fill the screen with a color
         screen.fill((94, 129, 162))
@@ -321,12 +410,13 @@ while True:
 
         # If the player press space, restart the game
         if keys[pygame.K_SPACE]:
-            game_state['playing'] = True
+            game_state['playing_kid'] = True
             game_state['game_over'] = False
             score = 0
-            player.add(Player())
+            player.add(Player(player_sprites['kid']))
             ground.add(Ground(0))
             ground.add(Ground(WIDTH))
+            time_machine.add(TimeMachine())
 
     pygame.display.flip()
     clock.tick(60)
