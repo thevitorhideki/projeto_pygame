@@ -27,19 +27,7 @@ player_sprites = {
     'skeleton': ['assets/skeleton/skeleton1.png', 'assets/skeleton/skeleton2.png'],
 }
 
-# Music #
-
-# Instantiate mixer
-mixer.init()
-# Load audio file
-mixer.music.load('music/music.mp3')
-# Set preferred volume
-mixer.music.set_volume(0.4)
-# Play with loop
-mixer.music.play(-1)
-
-next_track = True
-
+################# CLASS PLAYER #################
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, player_type):
@@ -140,6 +128,8 @@ class Player(pygame.sprite.Sprite):
         self.jump()
         self.animation_state()
 
+################# SETTINGS #################
+
 # Window settings
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Existential Crisis")
@@ -148,14 +138,31 @@ clock = pygame.time.Clock()
 font_pixel = pygame.font.Font('font/Pixeltype.ttf', 50)
 font_blox = pygame.font.Font('font/blox-brk.regular.ttf', 75)
 
+# Instantiate mixer
+mixer.init()
+# Load audio file
+mixer.music.load('music/music.mp3')
+# Set preferred volume
+mixer.music.set_volume(0.4)
+# Play with loop
+mixer.music.play(-1)
+
+next_track = True
+
 # Player, tree and ground groups
 player = pygame.sprite.GroupSingle()
 player.add(Player(player_sprites['kid']))
 
 tree.add(Tree())
 
-ground.add(Ground(0))
-ground.add(Ground(WIDTH))
+ground_styles = {
+    'kid': 'assets/morning/ground_morning.png',
+    'man': 'assets/afternoon/ground_afternoon.png',
+    'oldman': 'assets/night/ground_night.png',
+    'hell': 'assets/hell/hell_ground.png',
+}
+ground.add(Ground(0, ground_styles['kid']))
+ground.add(Ground(WIDTH, ground_styles['kid']))
 
 portal.add(Portal())
 demon.add(Demon())
@@ -170,13 +177,12 @@ game_state = {
     'player_name': True
 }
 
-def transition(screen):
-    fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    for alpha in range(0, 255, 5):  # Decrease alpha value
-        fade_surface.fill((0, 0, 0, alpha))  # Fill with black and alpha value
-        screen.blit(fade_surface, (0, 0))
-        pygame.display.update()
-        pygame.time.delay(30)  # Delay for smoother effect
+background_styles = {
+    'kid': 'assets/morning/sky_morning.png',
+    'man': 'assets/afternoon/sky_afternoon.png',
+    'oldman': ['assets/night/sky_night.png', 'assets/night/sky_night2.png'],
+    'hell': 'assets/hell/hell_background.png',
+}
 
 # Pontuação
 score = 0
@@ -190,6 +196,16 @@ pygame.time.set_timer(platform_timer, 2400)
 rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
 
+################# GAME LOOP #################
+
+def transition(screen):
+    fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    for alpha in range(0, 255, 5):  # Decrease alpha value
+        fade_surface.fill((0, 0, 0, alpha))  # Fill with black and alpha value
+        screen.blit(fade_surface, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(30)  # Delay for smoother effect
+        
 while True:
     # Read the scoreboard file
     scoreboard = pd.read_csv('scoreboard.csv')
@@ -213,6 +229,7 @@ while True:
             platforms.add(Platforms(WIDTH + 128, y_pos))
         if event.type == rocks_timer and (game_state['playing_kid'] or game_state['playing_man'] or game_state['playing_oldman']):
             rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620))
+            
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
             if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -234,11 +251,11 @@ while True:
         screen.blit(game_name, game_name_rect)
 
         # Draw the background
-        background = pygame.image.load('assets/sky.png').convert_alpha()
+        background = pygame.image.load(background_styles['kid']).convert_alpha()
         background_rect = background.get_rect(bottomleft=(0, 800))
         screen.blit(background, background_rect)
         
-        background_2 = pygame.image.load('assets/sky.png').convert_alpha()
+        background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
         background_2_rect = background.get_rect(bottomleft=(background_rect.width, 800))
 
         # Load the player and tree images and draw them on the screen
@@ -335,6 +352,8 @@ while True:
             game_state['playing_kid'] = False
             game_state['playing_man'] = True
             background_rect = background.get_rect(bottomleft=(0, 800))
+            background = pygame.image.load(background_styles['man']).convert_alpha()
+            background_2 = pygame.image.load(background_styles['man']).convert_alpha()
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -342,8 +361,8 @@ while True:
             portal.empty()
 
             player.add(Player(player_sprites['man']))
-            ground.add(Ground(0))
-            ground.add(Ground(WIDTH))
+            ground.add(Ground(0, ground_styles['man']))
+            ground.add(Ground(WIDTH, ground_styles['man']))
             portal.add(Portal())
 
         # Update the score
@@ -384,6 +403,8 @@ while True:
             game_state['playing_man'] = False
             game_state['playing_oldman'] = True
             background_rect = background.get_rect(bottomleft=(0, 800))
+            background = pygame.image.load(background_styles['oldman'][0]).convert_alpha()
+            background_2 = pygame.image.load(background_styles['oldman'][1]).convert_alpha()
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -391,8 +412,8 @@ while True:
             portal.empty()
 
             player.add(Player(player_sprites['oldman']))
-            ground.add(Ground(0))
-            ground.add(Ground(WIDTH))
+            ground.add(Ground(0, ground_styles['oldman']))
+            ground.add(Ground(WIDTH, ground_styles['oldman']))
 
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
@@ -432,6 +453,8 @@ while True:
             game_state['hell'] = True
             
             background_rect = background.get_rect(bottomleft=(0, 800))
+            background = pygame.image.load(background_styles['hell']).convert_alpha()
+            background_2 = pygame.image.load(background_styles['hell']).convert_alpha()
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -439,8 +462,8 @@ while True:
             portal.empty()
 
             player.add(Player(player_sprites['skeleton']))
-            ground.add(Ground(0))
-            ground.add(Ground(WIDTH))
+            ground.add(Ground(0, ground_styles['hell']))
+            ground.add(Ground(WIDTH, ground_styles['hell']))
 
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
