@@ -10,7 +10,7 @@ class Demon(pygame.sprite.Sprite):
         Construtor da classe Demon.
         """
         super().__init__()
-        self.demon_list = [pygame.image.load(f'assets/demon{i}.png').convert_alpha() for i in range(1, 9)]
+        self.demon_list = [pygame.image.load(f'assets/demon/demon{i}.png').convert_alpha() for i in range(1, 9)]
         # Load the demon images from the 'assets' folder and store them in a list
         # with transparency enabled using convert_alpha()
         self.demon_index = 0

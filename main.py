@@ -30,55 +30,89 @@ player_sprites = {
 ################# CLASS PLAYER #################
 
 class Player(pygame.sprite.Sprite):
+    """
+    Classe que representa o jogador.
+    """
     def __init__(self, player_type):
+        """
+        Inicializa os atributos do jogador.
+
+        Carrega os sprites do jogador, define o sprite atual para a animação, posiciona o jogador e
+        inicializa os atributos de gravidade, velocidade vertical e pulo.
+
+        Argumentos:
+            player_type: Lista contendo assets diferentes do jogador para cada fase do jogo.
+        """
         super().__init__()
-        # Load player sprites and scale
         player_1 = pygame.image.load(player_type[0]).convert_alpha()
         player_2 = pygame.image.load(player_type[1]).convert_alpha()
 
-        # List containing player sprites for movement animation
         self.player_walk = [player_1, player_2]
         self.player_index = 0
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom=(100, 620))
-
-        # Load player jump sprite and scale
-        # self.player_jump = pygame.image.load('assets/kid/player1.png').convert_alpha()
 
         self.gravity = 1
         self.speedy = 0
         self.jump_bool = False
 
     def isCollidingPlatform(self, platforms):
-        # Checks if the player is colliding with a platform
+        """
+        Método que verifica se o jogador está colidindo com uma plataforma.
+
+        Argumentos:
+            platforms: Grupo contendo as plataformas.
+
+        Retornos:
+            platform ou False: A plataforma com a qual o jogador está colidindo ou False se não houver colisão.
+        """
         platforms_hit = pygame.sprite.spritecollide(self, platforms, False)
         for platform in platforms_hit:
             if self.rect.colliderect(platform.rect):
-                # Returns witch platform the player is colliding with
                 return platform
         return False
 
     def isCollidingGround(self, ground):
-        # Checks if the player is colliding with the ground
+        """
+        Método que verifica se o jogador está colidindo com o chão.
+
+        Argumentos:
+            ground: Grupo contendo o chão.
+
+        Retornos:
+            booleano: True se o jogador estiver colidindo com o solo ou False se não houver colisão.
+        """
         for g in ground:
             if self.rect.colliderect(g.rect):
                 return True
         return False
 
     def jump(self):
-        # Verify if player press space and he's not jumping if both are true, jump
+        """
+        Método que realiza o pulo do jogador.
+
+        Verifica se a tecla de espaço foi pressionada e se o jogador não está pulando.
+        Se ambas as condições forem verdadeiras, aplica a velocidade vertical negativa
+        para subir o jogador e define o estado de pulo como True.
+        """
         if keys[pygame.K_SPACE] and self.jump_bool == False:
             self.speedy -= 20
             self.jump_bool = True
 
     def apply_gravity(self):
-        # If Player is in the air and the space key is pressed, apply the glide effect.
+        """
+        Método que aplica a gravidade no jogador.
+
+        Aplica a gravidade normal somente se o jogador estiver no ar e a tecla de espaço não estiver pressionada.
+        Caso esrtiver no ar com o espaço apertado, o jogador plana.
+        Em seguida, atualiza a posição vertical do jogador com base na velocidade vertical e gravidade,
+        leva em conta também a colisão com o chão e com as plataformas.
+        """
         if keys[pygame.K_SPACE] and self.speedy >= 0:
             self.gravity = 0.1
         else:
             self.gravity = 1
 
-        # Gravity effect
         self.speedy += self.gravity
         self.rect.y += self.speedy
 
@@ -89,41 +123,61 @@ class Player(pygame.sprite.Sprite):
 
         if self.isCollidingPlatform(platforms):
             platform = self.isCollidingPlatform(platforms)
-            # Checks if the player is colliding with a platform and if he is, checks if he is falling or jumping
             if self.speedy > 0:
-                # If player is falling, stop him from falling and set his position to the top of the platform
                 self.rect.bottom = platform.rect.top + 1
                 self.jump_bool = False
                 self.speedy = 0
             elif self.speedy < 0:
-                # If player is jumping, stop him from jumping and set his position to the bottom of the platform
                 self.rect.top = platform.rect.bottom
                 self.speedy = 0
 
     def animation_state(self):
-        # If player is not in the air, play the walking animation
+        """
+        Método que define o estado da animação do jogador.
+
+        Se a velocidade em y do jogador for nula, ou seja, estiver no chão ou em uma plataforma,
+        aumenta o índice do sprite do jogador para animar a caminhada.
+        """
         if self.speedy == 0:
             self.player_index += 0.1
             self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
-        # else:
-        #     self.image = self.player_jump
 
-    def collision_player_rocks():
-        # Checks if the player is colliding with a rock
+    def collision_player_rocks(self):
+        """
+        Método que verifica se o jogador está colidindo com uma pedra.
+
+        Retorna:
+            booleano: True se o jogador está colidindo com uma pedra, nada caso contrário.
+        """
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
         
-    def collision_player_portal():
-        # Checks if the player is colliding with the portal
+    def collision_player_portal(self):
+        """
+        Método que verifica se o jogador está colidindo com um portal.
+
+        Retorna:
+            booleano: True se o jogador está colidindo com um portal, nada caso contrário.
+        """
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
         
-    def collision_player_demon():
-        # Checks if the player is colliding with the demon
+    def collision_player_demon(self):
+        """
+        Método que verifica se o jogador está colidindo com o demônio.
+
+        Retorna:
+            booleano: True se o jogador está colidindo com o domônio, nada caso contrário.
+        """
         if pygame.sprite.spritecollide(player.sprite, demon, False):
             return True
 
     def update(self):
+        """
+        Atualiza o jogador.
+
+        Chama os métodos apply_gravity(), jump() e animation_state() para atualizar o jogador.
+        """
         self.apply_gravity()
         self.jump()
         self.animation_state()
