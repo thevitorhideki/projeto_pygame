@@ -5,15 +5,15 @@ import pandas as pd
 from math import floor
 from sys import exit
 
-from tree import Tree, tree
-from ground import Ground, ground
-from platforms import Platforms, platforms
-from rocks import Rocks, rocks
-from portal import Portal, portal
-from demon import Demon, demon
+from classes.tree import Tree, tree
+from classes.ground import Ground, ground
+from classes.platforms import Platforms, platforms
+from classes.rocks import Rocks, rocks
+from classes.portal import Portal, portal
+from classes.demon import Demon, demon
 
 from settings import WIDTH, HEIGHT
-from utils import save_score
+from utils.write_csv import save_score
 
 pygame.init()
 
