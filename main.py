@@ -104,8 +104,7 @@ class Player(pygame.sprite.Sprite):
         # If player is not in the air, play the walking animation
         if self.speedy == 0:
             self.player_index += 0.1
-            self.image = self.player_walk[int(
-                self.player_index % len(self.player_walk))]
+            self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
         # else:
         #     self.image = self.player_jump
 
@@ -120,6 +119,7 @@ class Player(pygame.sprite.Sprite):
             return True
         
     def collision_player_demon():
+        # Checks if the player is colliding with the demon
         if pygame.sprite.spritecollide(player.sprite, demon, False):
             return True
 
@@ -274,18 +274,17 @@ while True:
                 player_name += event.unicode
 
     if game_state['player_name']:
-        # Draw the game name on the screen
-        game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
-        game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
-        screen.blit(game_name, game_name_rect)
-
         # Draw the background
         background = pygame.image.load(background_styles['kid']).convert_alpha()
         background_rect = background.get_rect(bottomleft=(0, 800))
         screen.blit(background, background_rect)
-        
         background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
         background_2_rect = background.get_rect(bottomleft=(3840, 800))
+        
+        # Draw the game name on the screen
+        game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
+        game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
+        screen.blit(game_name, game_name_rect)
 
         # Load the player and tree images and draw them on the screen
         player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
@@ -561,6 +560,14 @@ while True:
         your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
         best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
         screen.blit(your_best_score, best_score_rect)
+        
+        restart_text = font_pixel.render("Press R to restart", True, (255, 255, 255))
+        restart_rect = restart_text.get_rect(center=(WIDTH / 2 - 200, HEIGHT / 2 + 150))
+        screen.blit(restart_text, restart_rect)
+        
+        quit_text = font_pixel.render("Press ESC to quit", True, (255, 255, 255))
+        quit_rect = quit_text.get_rect(center=(WIDTH / 2 + 200, HEIGHT / 2 + 150))
+        screen.blit(quit_text, quit_rect)
 
         # Overall Best Score
         overall_best_score = scoreboard['Score'].max()
@@ -571,7 +578,7 @@ while True:
 
         # If the player press space, restart the game
         if keys[pygame.K_r]:
-            game_state['playing_kid'] = True
+            game_state['menu'] = True
             game_state['game_over'] = False
             score = 0
             player.add(Player(player_sprites['kid']))
@@ -586,7 +593,17 @@ while True:
             tree.add(Tree())
             mixer.music.load('music/music.mp3')
             mixer.music.play(-1)
-
+        elif keys[pygame.K_ESCAPE]:
+            game_state['player_name'] = True
+            game_state['game_over'] = False
+            score = 0
+            player_name = ''
+            ground.add(Ground(0, ground_styles['kid']))
+            ground.add(Ground(WIDTH, ground_styles['kid']))
+            player.add(Player(player_sprites['kid']))
+            tree.add(Tree())
+            mixer.music.load('music/music.mp3')
+            mixer.music.play(-1)
 
     pygame.display.flip()
     clock.tick(60)
