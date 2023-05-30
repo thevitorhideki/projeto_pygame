@@ -473,7 +473,7 @@ while True:
             portal.add(Portal(speed['man']))
 
         # Update the score
-        score += 1/60
+        score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
 
@@ -524,7 +524,7 @@ while True:
             ground.add(Ground(0, ground_styles['oldman'], speed['oldman']))
             ground.add(Ground(WIDTH, ground_styles['oldman'],  speed['oldman']))
 
-        score += 1/60
+        score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
 
@@ -578,7 +578,7 @@ while True:
             mixer.music.load('music/music_hell.mp3')
             mixer.music.play()
 
-        score += 1/60
+        score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['hell']:        
@@ -608,7 +608,7 @@ while True:
             game_state['hell'] = False
             game_state['game_over'] = True
 
-        score += 1/60
+        score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['game_over']:
