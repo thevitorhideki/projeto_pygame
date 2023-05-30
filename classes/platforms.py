@@ -5,7 +5,7 @@ class Platforms(pygame.sprite.Sprite):
     Classe que representa uma plataforma do jogo
     """
 
-    def __init__(self, x_pos, y_pos, style):
+    def __init__(self, x_pos, y_pos, style, speed):
         """
         Construtor da classe Plataforma
 
@@ -21,6 +21,7 @@ class Platforms(pygame.sprite.Sprite):
         # Set the image of the platform
         self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
         # Create a rect object for the platform with its initial position
+        self.speed = speed
     
     def destroy(self):
         """
@@ -35,7 +36,7 @@ class Platforms(pygame.sprite.Sprite):
         """
         Move a plataforma horizontalmente.
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
         # Move the platform rect horizontally to the left by 4 pixels in each update
     
     def update(self):

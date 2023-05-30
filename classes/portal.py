@@ -3,7 +3,7 @@ import pygame
 class Portal(pygame.sprite.Sprite):
     """Classe que representa um portal no jogo."""
 
-    def __init__(self):
+    def __init__(self, speed):
         """
         Inicializa um objeto Portal.
 
@@ -18,13 +18,14 @@ class Portal(pygame.sprite.Sprite):
         self.portal_index = 0
         self.image = self.portal_anim[self.portal_index]
         self.rect = self.image.get_rect(bottomleft=(1280 * 3, 620))
+        self.speed = speed
     
     def movement(self):
         """
         Move o portal para a esquerda.
 
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
 
     def animation_state(self):
         """

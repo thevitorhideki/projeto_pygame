@@ -3,7 +3,7 @@ import pygame
 class Rocks(pygame.sprite.Sprite):
     """Classe que representa as rochas no jogo."""
 
-    def __init__(self, x_pos, y_pos, style):
+    def __init__(self, x_pos, y_pos, style, speed):
         """
         Inicializa um objeto Rock.
 
@@ -21,6 +21,7 @@ class Rocks(pygame.sprite.Sprite):
         
         # Posiciona a rocha na parte inferior esquerda com as coordenadas fornecidas
         self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
+        self.speed = speed
     
     def destroy(self):
         """
@@ -35,7 +36,7 @@ class Rocks(pygame.sprite.Sprite):
         Move a rocha para a esquerda.
 
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
 
     def update(self):
         """

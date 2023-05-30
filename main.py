@@ -213,7 +213,14 @@ Estilos com os assets que serão utilizados em cada fase diferente do jogo
 player = pygame.sprite.GroupSingle()
 player.add(Player(player_sprites['kid']))
 
-tree.add(Tree())
+speed = {
+    'kid': 4,
+    'man': 5,
+    'oldman': 6,
+    'hell': 7,
+}
+
+tree.add(Tree(speed['kid']))
 
 ground_styles = {
     'kid': 'assets/morning/ground_morning.png',
@@ -221,11 +228,10 @@ ground_styles = {
     'oldman': 'assets/night/ground_night.png',
     'hell': 'assets/hell/hell_ground.png',
 }
-ground.add(Ground(0, ground_styles['kid']))
-ground.add(Ground(WIDTH, ground_styles['kid']))
+ground.add(Ground(0, ground_styles['kid'], speed['kid']))
+ground.add(Ground(WIDTH, ground_styles['kid'], speed['kid']))
 
-portal.add(Portal())
-demon.add(Demon())
+portal.add(Portal(speed['kid']))
 
 game_state = {
     'playing_kid': False,
@@ -255,6 +261,7 @@ platform_style = {
     'oldman': 'assets/night/platform_night.png',
     'hell': 'assets/hell/hell_platform.png',
 }
+
 
 # Pontuação
 score = 0
@@ -302,29 +309,34 @@ while True:
             x_pos = random.randint(WIDTH, WIDTH + 200)
             y_pos = random.randint(300, 450)
             if game_state['playing_kid']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['kid']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['kid']))
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['kid']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['kid'], speed['kid']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['kid'], speed['kid']))
             elif game_state['hell']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['hell']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['hell']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['hell']))
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['hell'], speed['hell']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['hell'], speed['hell']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['hell'], speed['hell']))
             elif game_state['playing_man']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['man']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['man']))
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['man']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['man'], speed['man']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['man'], speed['man']))
             elif game_state['playing_oldman']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['oldman']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['oldman']))
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['oldman']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['oldman'], speed['oldman']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['oldman'], speed['oldman']))
             
         # Rock timer
         if event.type == rocks_timer and not (game_state['menu'] or game_state['player_name']):
             if game_state['hell']:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['hell']))
-            else:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal']))
-            
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['hell'], speed['hell']))
+            elif game_state['playing_kid']:
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['kid']))
+            elif game_state['playing_man']:
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['man']))
+            elif game_state['playing_oldman']:
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['oldman']))
+                
+                
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
             if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
@@ -456,9 +468,9 @@ while True:
             portal.empty()
 
             player.add(Player(player_sprites['man']))
-            ground.add(Ground(0, ground_styles['man']))
-            ground.add(Ground(WIDTH, ground_styles['man']))
-            portal.add(Portal())
+            ground.add(Ground(0, ground_styles['man'], speed['man']))
+            ground.add(Ground(WIDTH, ground_styles['man'], speed['man']))
+            portal.add(Portal(speed['man']))
 
         # Update the score
         score += 1/60
@@ -507,9 +519,10 @@ while True:
             ground.empty()
             portal.empty()
 
+            demon.add(Demon(speed['oldman']))
             player.add(Player(player_sprites['oldman']))
-            ground.add(Ground(0, ground_styles['oldman']))
-            ground.add(Ground(WIDTH, ground_styles['oldman']))
+            ground.add(Ground(0, ground_styles['oldman'], speed['oldman']))
+            ground.add(Ground(WIDTH, ground_styles['oldman'],  speed['oldman']))
 
         score += 1/60
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
@@ -559,8 +572,8 @@ while True:
             portal.empty()
 
             player.add(Player(player_sprites['skeleton']))
-            ground.add(Ground(0, ground_styles['hell']))
-            ground.add(Ground(WIDTH, ground_styles['hell']))
+            ground.add(Ground(0, ground_styles['hell'],  speed['hell']))
+            ground.add(Ground(WIDTH, ground_styles['hell'], speed['hell']))
             
             mixer.music.load('music/music_hell.mp3')
             mixer.music.play()
@@ -648,15 +661,14 @@ while True:
             game_state['game_over'] = False
             score = 0
             player.add(Player(player_sprites['kid']))
-            ground.add(Ground(0, ground_styles['kid']))
-            ground.add(Ground(WIDTH, ground_styles['kid']))
+            ground.add(Ground(0, ground_styles['kid'], speed['kid']))
+            ground.add(Ground(WIDTH, ground_styles['kid'], speed['kid']))
             background = pygame.image.load(background_styles['kid']).convert_alpha()
             background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
             background_rect = background.get_rect(bottomleft=(0, 800))
             background_2_rect = background.get_rect(bottomleft=(3840, 800))
-            portal.add(Portal())
-            demon.add(Demon())
-            tree.add(Tree())
+            portal.add(Portal(speed['kid']))
+            tree.add(Tree(speed['kid']))
             mixer.music.load('music/music.mp3')
             mixer.music.play(-1)
         elif keys[pygame.K_ESCAPE]:
@@ -664,10 +676,10 @@ while True:
             game_state['game_over'] = False
             score = 0
             player_name = ''
-            ground.add(Ground(0, ground_styles['kid']))
-            ground.add(Ground(WIDTH, ground_styles['kid']))
+            ground.add(Ground(0, ground_styles['kid'], speed['kid']))
+            ground.add(Ground(WIDTH, ground_styles['kid'], speed['kid']))
             player.add(Player(player_sprites['kid']))
-            tree.add(Tree())
+            tree.add(Tree(speed['kid']))
             mixer.music.load('music/music.mp3')
             mixer.music.play(-1)
 

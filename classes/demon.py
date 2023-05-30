@@ -5,7 +5,7 @@ class Demon(pygame.sprite.Sprite):
     A class representing a Demon sprite.
     """
 
-    def __init__(self):
+    def __init__(self, speed):
         """
         Construtor da classe Demon.
         """
@@ -19,6 +19,7 @@ class Demon(pygame.sprite.Sprite):
         # Set the initial image to the first demon image in the list
         self.rect = self.image.get_rect(bottomleft=(1280 * 3, 620))
         # Create a rect object for the demon image with its initial position
+        self.speed = speed
 
     def animation(self):
         """
@@ -33,7 +34,7 @@ class Demon(pygame.sprite.Sprite):
         """
         Move o demônio horizontalmente.
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
         # Move the demon rect horizontally to the left by 4 pixels in each update
 
     def update(self):
