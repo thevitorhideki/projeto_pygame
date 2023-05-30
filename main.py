@@ -142,7 +142,7 @@ class Player(pygame.sprite.Sprite):
             self.player_index += 0.1
             self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
 
-    def collision_player_rocks(self):
+    def collision_player_rocks():
         """
         Método que verifica se o jogador está colidindo com uma pedra.
 
@@ -152,7 +152,7 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
         
-    def collision_player_portal(self):
+    def collision_player_portal():
         """
         Método que verifica se o jogador está colidindo com um portal.
 
@@ -162,7 +162,7 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
         
-    def collision_player_demon(self):
+    def collision_player_demon():
         """
         Método que verifica se o jogador está colidindo com o demônio.
 
@@ -184,28 +184,32 @@ class Player(pygame.sprite.Sprite):
 
 ################# SETTINGS #################
 
-# Window settings
+# Configurações da tela
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Existential Crisis")
 
 clock = pygame.time.Clock()
 
-# Loading fonts
+# Carregando Fontes
 font_pixel = pygame.font.Font('font/Pixeltype.ttf', 50)
 font_blox = pygame.font.Font('font/blox-brk.regular.ttf', 75)
 
-# Instantiate mixer
+# Inicializa o mixer
 mixer.init()
-# Load audio file
+# Carrega arquivo de áudio
 mixer.music.load('music/music.mp3')
-# Set preferred volume
+# Define um volume
 mixer.music.set_volume(0.4)
-# Play with loop
+# Reproduz em loop
 mixer.music.play(-1)
 
 next_track = True
 
-# Player, tree and ground groups
+"""
+Grupos de jogador, árvore, chão, portal e demônio.
+
+Estilos com os assets que serão utilizados em cada fase diferente do jogo
+"""
 player = pygame.sprite.GroupSingle()
 player.add(Player(player_sprites['kid']))
 
@@ -257,7 +261,7 @@ score = 0
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
 
-# Timers
+# Timers para geração de plataformas e das pedras
 platform_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(platform_timer, 2400)
 
@@ -265,6 +269,12 @@ rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
 
 def transition(screen):
+    """
+    Função que realiza a transição entre as fases do jogo.
+
+    Argumentos:
+        screen: Tela do jogo na qual a troca será feita.
+    """
     fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
     for alpha in range(0, 255, 5):  # Decrease alpha value
         fade_surface.fill((0, 0, 0, alpha))  # Fill with black and alpha value
@@ -274,18 +284,20 @@ def transition(screen):
         
 ################# GAME LOOP #################
 while True:
-    # Read the scoreboard file
+    # Lê o arquivo de CSV com o placar
     scoreboard = pd.read_csv('scoreboard.csv')
 
-    # Get a tuple with all the keys, if the key is pressed, the value is True, if not, False
+    # Pega input do teclado
     keys = pygame.key.get_pressed()
 
     for event in pygame.event.get():
-        # Check if the player clicks the X button
+        # Verifica se o jogador clicou no X da janela e fecha o jogo se sim
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        # Platform timer
+        """
+        Gera plataformas
+        """
         if event.type == platform_timer and not (game_state['menu'] or game_state['player_name']):
             x_pos = random.randint(WIDTH, WIDTH + 200)
             y_pos = random.randint(300, 450)
