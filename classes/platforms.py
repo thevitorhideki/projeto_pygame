@@ -1,10 +1,10 @@
 import pygame
 
 class Platforms(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos):
+    def __init__(self, x_pos, y_pos, style):
         super().__init__()
         # Load platform sprite
-        city_platform = pygame.image.load('assets/platform.png').convert_alpha()
+        city_platform = pygame.image.load(style).convert_alpha()
         self.image = city_platform
         
         # Positioning the platform sprite on a random y axis

@@ -112,7 +112,7 @@ class Player(pygame.sprite.Sprite):
     def collision_player_rocks():
         # Checks if the player is colliding with a rock
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
-            pass
+            return True
         
     def collision_player_portal():
         # Checks if the player is colliding with the portal
@@ -135,6 +135,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Existential Crisis")
 
 clock = pygame.time.Clock()
+
+# Loading fonts
 font_pixel = pygame.font.Font('font/Pixeltype.ttf', 50)
 font_blox = pygame.font.Font('font/blox-brk.regular.ttf', 75)
 
@@ -184,6 +186,18 @@ background_styles = {
     'hell': 'assets/hell/hell_background.png',
 }
 
+rock_styles = {
+    'normal': 'assets/rock.png',
+    'hell': 'assets/hell/hell_rock.png',
+}
+
+platform_style = {
+    'kid': 'assets/morning/platform_morning.png',
+    'man': 'assets/afternoon/platform_afternoon.png',
+    'oldman': 'assets/night/platform_night.png',
+    'hell': 'assets/hell/hell_platform.png',
+}
+
 # Pontuação
 score = 0
 score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
@@ -196,8 +210,6 @@ pygame.time.set_timer(platform_timer, 2400)
 rocks_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(rocks_timer, 1800)
 
-################# GAME LOOP #################
-
 def transition(screen):
     fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
     for alpha in range(0, 255, 5):  # Decrease alpha value
@@ -206,6 +218,7 @@ def transition(screen):
         pygame.display.update()
         pygame.time.delay(30)  # Delay for smoother effect
         
+################# GAME LOOP #################
 while True:
     # Read the scoreboard file
     scoreboard = pd.read_csv('scoreboard.csv')
@@ -218,17 +231,33 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        # Platform and rock timers
-        if event.type == platform_timer and (game_state['playing_kid'] or game_state['playing_man'] or game_state['playing_oldman']):
+        # Platform timer
+        if event.type == platform_timer and not (game_state['menu'] or game_state['player_name']):
             x_pos = random.randint(WIDTH, WIDTH + 200)
             y_pos = random.randint(300, 450)
+            if game_state['playing_kid']:
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['kid']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['kid']))
+            elif game_state['hell']:
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['hell']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['hell']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['hell']))
+            elif game_state['playing_man']:
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['man']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['man']))
+            elif game_state['playing_oldman']:
+                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal']))
+                platforms.add(Platforms(WIDTH, y_pos, platform_style['oldman']))
+                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['oldman']))
             
-            rocks.add(Rocks(x_pos, y_pos - 20))
-            
-            platforms.add(Platforms(WIDTH, y_pos))
-            platforms.add(Platforms(WIDTH + 128, y_pos))
-        if event.type == rocks_timer and (game_state['playing_kid'] or game_state['playing_man'] or game_state['playing_oldman']):
-            rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620))
+        # Rock timer
+        if event.type == rocks_timer and not (game_state['menu'] or game_state['player_name']):
+            if game_state['hell']:
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['hell']))
+            else:
+                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal']))
             
         # Get the input from the player and save it in the variable player_name
         if event.type == pygame.KEYDOWN and game_state['player_name']:
@@ -256,7 +285,7 @@ while True:
         screen.blit(background, background_rect)
         
         background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
-        background_2_rect = background.get_rect(bottomleft=(background_rect.width, 800))
+        background_2_rect = background.get_rect(bottomleft=(3840, 800))
 
         # Load the player and tree images and draw them on the screen
         player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
@@ -351,9 +380,10 @@ while True:
             transition(screen)
             game_state['playing_kid'] = False
             game_state['playing_man'] = True
-            background_rect = background.get_rect(bottomleft=(0, 800))
             background = pygame.image.load(background_styles['man']).convert_alpha()
             background_2 = pygame.image.load(background_styles['man']).convert_alpha()
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            background_2_rect = background.get_rect(bottomleft=(3840, 800))
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -366,7 +396,7 @@ while True:
             portal.add(Portal())
 
         # Update the score
-        score += 0.2
+        score += 1/60
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
     # If the game is not running, show the game over screen
 
@@ -402,9 +432,10 @@ while True:
             transition(screen)
             game_state['playing_man'] = False
             game_state['playing_oldman'] = True
-            background_rect = background.get_rect(bottomleft=(0, 800))
             background = pygame.image.load(background_styles['oldman'][0]).convert_alpha()
             background_2 = pygame.image.load(background_styles['oldman'][1]).convert_alpha()
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            background_2_rect = background.get_rect(bottomleft=(3840, 800))
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -415,7 +446,7 @@ while True:
             ground.add(Ground(0, ground_styles['oldman']))
             ground.add(Ground(WIDTH, ground_styles['oldman']))
 
-        score += 0.2
+        score += 1/60
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
 
@@ -452,9 +483,10 @@ while True:
             game_state['playing_oldman'] = False
             game_state['hell'] = True
             
-            background_rect = background.get_rect(bottomleft=(0, 800))
             background = pygame.image.load(background_styles['hell']).convert_alpha()
             background_2 = pygame.image.load(background_styles['hell']).convert_alpha()
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            background_2_rect = background.get_rect(bottomleft=(3840, 800))
             player.empty()
             rocks.empty()
             platforms.empty()
@@ -464,16 +496,14 @@ while True:
             player.add(Player(player_sprites['skeleton']))
             ground.add(Ground(0, ground_styles['hell']))
             ground.add(Ground(WIDTH, ground_styles['hell']))
-
-        score += 0.2
-        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
-
-    elif game_state['hell']:
-        if next_track:
+            
             mixer.music.load('music/music_hell.mp3')
             mixer.music.play()
-            next_track = False
-        
+
+        score += 1/60
+        score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
+
+    elif game_state['hell']:        
         screen.blit(background, background_rect)
         screen.blit(background_2, background_2_rect)
         
@@ -488,10 +518,10 @@ while True:
         ground.draw(screen)
         ground.update()
 
-        if background_2_rect.topright[0] == WIDTH:
-            background_rect.x = WIDTH
-        elif background_rect.topright[0] == WIDTH:
-            background_2_rect.x = WIDTH
+        if background_2_rect.topright[0] <= 0:
+            background_2_rect.x = 3840
+        elif background_rect.topright[0] <= 0:
+            background_rect.x = 3840
             
         background_rect.x -= 1
         background_2_rect.x -= 1
@@ -500,7 +530,7 @@ while True:
             game_state['hell'] = False
             game_state['game_over'] = True
 
-        score += 0.2
+        score += 1/60
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['game_over']:
@@ -540,15 +570,22 @@ while True:
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
         # If the player press space, restart the game
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_r]:
             game_state['playing_kid'] = True
             game_state['game_over'] = False
             score = 0
             player.add(Player(player_sprites['kid']))
-            ground.add(Ground(0))
-            ground.add(Ground(WIDTH))
+            ground.add(Ground(0, ground_styles['kid']))
+            ground.add(Ground(WIDTH, ground_styles['kid']))
+            background = pygame.image.load(background_styles['kid']).convert_alpha()
+            background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
+            background_rect = background.get_rect(bottomleft=(0, 800))
+            background_2_rect = background.get_rect(bottomleft=(3840, 800))
             portal.add(Portal())
             demon.add(Demon())
+            tree.add(Tree())
+            mixer.music.load('music/music.mp3')
+            mixer.music.play(-1)
 
 
     pygame.display.flip()

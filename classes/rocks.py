@@ -1,9 +1,9 @@
 import pygame
 
 class Rocks(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos):
+    def __init__(self, x_pos, y_pos, style):
         super().__init__()
-        rock = pygame.image.load('assets/rock.png').convert_alpha()
+        rock = pygame.image.load(style).convert_alpha()
         self.image = rock
         
         # Positioning the platform sprite on a random y axis
