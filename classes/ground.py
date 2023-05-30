@@ -6,7 +6,7 @@ class Ground(pygame.sprite.Sprite):
     Classe que representa o chão do jogo.
     """
 
-    def __init__(self, pos_x, sprite):
+    def __init__(self, pos_x, sprite, speed):
         """
         Construtor da classe Ground.
 
@@ -21,12 +21,13 @@ class Ground(pygame.sprite.Sprite):
         # Set the image of the ground
         self.rect = self.image.get_rect(bottomleft=(pos_x, 770))
         # Create a rect object for the ground with its initial position
+        self.speed = speed
     
     def movement(self):
         """
         Move a plataforma horizontalmente
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
         # Move the ground rect horizontally to the left by 4 pixels in each update
     
     def replace(self):

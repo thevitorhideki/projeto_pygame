@@ -3,7 +3,7 @@ import pygame
 class Tree(pygame.sprite.Sprite):
     """Classe que representa uma árvore no jogo."""
 
-    def __init__(self):
+    def __init__(self, speed):
         """
         Inicializa um objeto Tree.
 
@@ -15,6 +15,7 @@ class Tree(pygame.sprite.Sprite):
         tree = pygame.transform.scale(tree, (150, 150))
         self.image = tree
         self.rect = self.image.get_rect(bottomleft=(0, 620))
+        self.speed = speed
     
     def destroy(self):
         """
@@ -29,7 +30,7 @@ class Tree(pygame.sprite.Sprite):
         Move a árvore para a esquerda.
 
         """
-        self.rect.x -= 4
+        self.rect.x -= self.speed
 
     def update(self):
         """
