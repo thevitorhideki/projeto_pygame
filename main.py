@@ -223,6 +223,9 @@ mixer.music.play(-1)
 
 next_track = True
 
+# Boleano para o controle da musica do game over
+bool_game_over_music=True
+
 """
 Grupos de jogador, árvore, chão, portal e demônio.
 
@@ -476,6 +479,9 @@ while True:
         portal.draw(screen)
         portal.update()
 
+        # Ativa o som de game over
+        bool_game_over_music = True
+
         # Lógica para que o fundo seja infinito
         if background_2_rect.topright[0] == WIDTH:
             background_rect.x = WIDTH
@@ -642,6 +648,7 @@ while True:
             ground.add(Ground(WIDTH, ground_styles['hell'], speed['hell']))
             
             mixer.music.load('music/music_hell.mp3')
+            mixer.music.set_volume(0.4)
             mixer.music.play()
 
         # Atualiza a pontuação
@@ -691,6 +698,8 @@ while True:
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
+    
+
     elif game_state['game_over']:
         """
         Estado do jogo de game over que espera que mostra a pontução final do jogador, sua pontuação máxima
@@ -700,6 +709,19 @@ while True:
         Carrega os assets e textos necessários para essa tela.
         Mostra esses assets e textos na tela.
         """
+
+        # PARA A MUSICA QUE ESTA TOCANDO
+        mixer.music.stop()
+        # Carrega a música de game over
+        game_over_music = pygame.mixer.Sound('music/game_over.mp3')
+        # Reproduz a música de game over
+        if bool_game_over_music==True:
+            # Define o volume desejado (0.0 a 1.0)
+            game_over_music_volume = 0.085
+            game_over_music.set_volume(game_over_music_volume)
+            game_over_music.play()
+        bool_game_over_music=False
+
 
         player.empty()
         rocks.empty()
