@@ -12,7 +12,7 @@ Projeto de jogo desenvolvido com o [Pygame][pygame] na matéria de Design de Sof
 
 ## Conceito do jogo
 
-Este jogo conta a história de uma criança que corre e com o passar do tempo encontra portais que o levam a e viajar por diferentes fases da vida: infância, idade adulta e velhice. Após a velhice, se depara com um demônio que o leva ao inferno, onde segue pela eternidade.
+Este jogo conta a história de uma criança que está correndo, e com o passar do tempo encontra portais que a levam para viajar por diferentes fases da vida: infância, idade adulta e velhice. Após a velhice, se depara com um ser misterioso que leva ela para outra dimensão.
 
 ---
 
@@ -63,29 +63,31 @@ python ./main.py
 [vitor]: https://github.com/thevitorhideki
 
 ---
+
 ## Créditos
-Lógica básica: https://www.youtube.com/watch?v=AY9MnQ4x3zk
 
-Fonte: 
+Lógica básica: <https://www.youtube.com/watch?v=AY9MnQ4x3zk>
 
-Background:
+Background: <https://wallhere.com/en/wallpaper/3130>
 
-Portal:
+Portal: <https://tenor.com/view/portal-pixel-art-pixelized-spinning-whirlpool-gif-16926051>
 
-Demônio: 
+Demônio: <https://www.pinterest.com/pin/504192120781799231/>
 
-Background inferno:
+Background inferno: <https://www.indiedb.com/games/portal-mortal/images/upcoming-theme-background>
 
-Esqueleto:
+Esqueleto: <https://snoblin.itch.io/pixel-rpg-skeleton-free?download>
 
-Olhos:
+Olhos: <https://www.reddit.com/r/Terraria/comments/l52kpd/eye_of_cthulhu_pixel_art/>
 
 Música Criança, Adulto e Idoso:
 
-Música Inferno:
+Música Inferno: <https://www.youtube.com/watch?v=cVukkhUI-xM>
 
 Som de Morte:
 
 ---
+
 ## Vídeo Gameplay
 
+<https://youtu.be/He9brKj1270>
