@@ -34,7 +34,7 @@ class Ground(pygame.sprite.Sprite):
         Repõe o chão quando ele sai da tela.
         """
 
-        if self.rect.x <= -WIDTH:
+        if self.rect.x <= -WIDTH + 10:
             self.rect.x = WIDTH
     
     def update(self):
