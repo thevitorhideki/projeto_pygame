@@ -105,12 +105,14 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and not self.jump_bool:
             melodia = [4, 3, 2, 1]
+            melodiaint=random.choice(melodia)
             if not game_state['hell']:
-                if self.melodia_index <= 4:
-                    jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodia[self.melodia_index]}.mp3")
-                    self.melodia_index += 1
-                    if self.melodia_index == 4:
-                        self.melodia_index = 0
+                jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodiaint}.mp3")
+                # if self.melodia_index <= 4:
+                #     jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodia[self.melodia_index]}.mp3")
+                #     # self.melodia_index += 1
+                #     if self.melodia_index == 4:
+                #         self.melodia_index = 0
             else:
                 jump_sound = pygame.mixer.Sound("music/jump_sound.mp3")
 
@@ -187,7 +189,7 @@ class Player(pygame.sprite.Sprite):
 
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             portal_sound = pygame.mixer.Sound("music/portal.mp3")
-            portal_volume = 0.3
+            portal_volume = 0.2
             portal_sound.set_volume(portal_volume)
             portal_sound.play()
             return True
@@ -202,7 +204,7 @@ class Player(pygame.sprite.Sprite):
 
         if pygame.sprite.spritecollide(player.sprite, demon, False):
             portal_sound = pygame.mixer.Sound("music/portal.mp3")
-            portal_volume = 0.3
+            portal_volume = 0.2
             portal_sound.set_volume(portal_volume)
             portal_sound.play()
             return True
