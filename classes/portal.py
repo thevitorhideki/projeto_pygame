@@ -20,7 +20,7 @@ class Portal(pygame.sprite.Sprite):
         self.portal_anim = [portal1, portal2]
         self.portal_index = 0
         self.image = self.portal_anim[self.portal_index]
-        self.rect = self.image.get_rect(bottomleft=(1280 * 12, 620))
+        self.rect = self.image.get_rect(bottomleft=(1280 * 3, 620))
         self.speed = speed
     
     def movement(self):

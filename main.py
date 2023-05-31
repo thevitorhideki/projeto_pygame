@@ -216,7 +216,7 @@ class Player(pygame.sprite.Sprite):
 ################# CONFIGURAÇÕES #################
 
 # Configurações da tela
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Existential Crisis")
 
 clock = pygame.time.Clock()
