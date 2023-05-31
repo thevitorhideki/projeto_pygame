@@ -13,6 +13,9 @@ from classes.portal import Portal, portal
 from classes.demon import Demon, demon
 
 from settings import WIDTH, HEIGHT
+from utils.structure_1 import structure_1
+from utils.structure_2 import structure_2
+from utils.structure_3 import structure_3
 from utils.write_csv import save_score
 
 pygame.init()
@@ -292,11 +295,8 @@ score_text = font_pixel.render("Score: " + str(score), True, (255, 255, 255))
 score_rect = score_text.get_rect(topleft=(10, 10))
 
 # Timers para geração de plataformas e das pedras
-platform_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(platform_timer, 2400)
-
-rocks_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(rocks_timer, 1800)
+structure = pygame.USEREVENT + 1
+pygame.time.set_timer(structure, 3200)
 
 def transition(screen):
     """
@@ -326,45 +326,18 @@ while True:
             pygame.quit()
             exit()
         """
-        Gera plataformas no jogo a cada intervalo do timer, com posições aleatórias dentro de um intervalo em y.
-        Em cima dessas plataformas, posiciona pedras em algum lugar.
-        Os assets das plataformas e das pedras dependem da fase do jogo.
+        Gera estruturas no jogo a cada intervalo do timer, e é selecionado aleatoriamente entre 3 tipos de estruturas.
         """
-        if event.type == platform_timer and not (game_state['menu'] or game_state['player_name']):
-            x_pos = random.randint(WIDTH, WIDTH + 200)
-            y_pos = random.randint(300, 450)
-            if game_state['playing_kid']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['kid']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['kid'], speed['kid']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['kid'], speed['kid']))
-            elif game_state['hell']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['hell'], speed['hell']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['hell'], speed['hell']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['hell'], speed['hell']))
-            elif game_state['playing_man']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['man']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['man'], speed['man']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['man'], speed['man']))
-            elif game_state['playing_oldman']:
-                rocks.add(Rocks(x_pos, y_pos - 20, rock_styles['normal'], speed['oldman']))
-                platforms.add(Platforms(WIDTH, y_pos, platform_style['oldman'], speed['oldman']))
-                platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['oldman'], speed['oldman']))
+        if event.type == structure and not (game_state['menu'] or game_state['player_name']):
+            structures = [
+                structure_1,
+                structure_1,
+                structure_1,
+                structure_2,
+                structure_3
+            ]
+            random.choice(structures)(game_state, rocks, platforms, rock_styles, platform_style, speed)
             
-        """
-        Gera pedras no chão do jogo a cada intervalo do timer.
-        Os assets das pedras dependem da fase do jogo.
-        """
-        if event.type == rocks_timer and not (game_state['menu'] or game_state['player_name']):
-            if game_state['hell']:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['hell'], speed['hell']))
-            elif game_state['playing_kid']:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['kid']))
-            elif game_state['playing_man']:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['man']))
-            elif game_state['playing_oldman']:
-                rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['oldman']))
-                
-                
         """
         Coleta o input de nome do jogador, armazena em uma variável.
         Muda o estado do jogo para o menu inicial quando o jogador enviar seu nome.
@@ -788,6 +761,7 @@ while True:
             ground.add(Ground(WIDTH, ground_styles['kid'], speed['kid']))
             player.add(Player(player_sprites['kid']))
             tree.add(Tree(speed['kid']))
+            portal.add(Portal(speed['kid']))
             mixer.music.load('music/music.mp3')
             mixer.music.play(-1)
 
