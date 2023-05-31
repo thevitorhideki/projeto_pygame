@@ -99,7 +99,15 @@ class Player(pygame.sprite.Sprite):
         para subir o jogador e define o estado de pulo como True.
         """
 
-        if keys[pygame.K_SPACE] and self.jump_bool == False:
+        if keys[pygame.K_SPACE] and not self.jump_bool:
+            # Carrega o som do pulo
+            jump_sound = pygame.mixer.Sound("music/jump_sound.mp3")
+            # Define o volume desejado (0.0 a 1.0)
+            jump_volume = 0.035
+            jump_sound.set_volume(jump_volume)
+            # Reproduz o som do pulo
+            jump_sound.play()
+
             self.speedy -= 20
             self.jump_bool = True
 
