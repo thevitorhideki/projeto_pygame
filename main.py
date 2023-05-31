@@ -59,6 +59,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 1
         self.speedy = 0
         self.jump_bool = False
+        self.melodia_index = 0
 
     def isCollidingPlatform(self, platforms):
         """
@@ -103,13 +104,18 @@ class Player(pygame.sprite.Sprite):
         """
 
         if keys[pygame.K_SPACE] and not self.jump_bool:
-            num_jump = random.randint(1, 4)
-            # Carrega o som do pulo
-            jump_sound = pygame.mixer.Sound(f"music/jumps/jump{num_jump}.mp3")
-            # Define o volume desejado (0.0 a 1.0)
+            melodia = [4, 3, 2, 1]
+            if not game_state['hell']:
+                if self.melodia_index <= 4:
+                    jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodia[self.melodia_index]}.mp3")
+                    self.melodia_index += 1
+                    if self.melodia_index == 4:
+                        self.melodia_index = 0
+            else:
+                jump_sound = pygame.mixer.Sound("music/jump_sound.mp3")
+
             jump_volume = 0.25
             jump_sound.set_volume(jump_volume)
-            # Reproduz o som do pulo
             jump_sound.play()
 
             self.speedy -= 20
