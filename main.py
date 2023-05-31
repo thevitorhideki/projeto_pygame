@@ -7,8 +7,8 @@ from sys import exit
 
 from classes.tree import Tree, tree
 from classes.ground import Ground, ground
-from classes.platforms import Platforms, platforms
-from classes.rocks import Rocks, rocks
+from classes.platforms import platforms
+from classes.rocks import rocks
 from classes.portal import Portal, portal
 from classes.demon import Demon, demon
 
@@ -76,7 +76,6 @@ class Player(pygame.sprite.Sprite):
         for platform in platforms_hit:
             if self.rect.colliderect(platform.rect):
                 return platform
-        return False
 
     def isCollidingGround(self, ground):
         """
@@ -92,7 +91,6 @@ class Player(pygame.sprite.Sprite):
         for g in ground:
             if self.rect.colliderect(g.rect):
                 return True
-        return False
 
     def jump(self):
         """
@@ -108,15 +106,10 @@ class Player(pygame.sprite.Sprite):
             melodiaint=random.choice(melodia)
             if not game_state['hell']:
                 jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodiaint}.mp3")
-                # if self.melodia_index <= 4:
-                #     jump_sound = pygame.mixer.Sound(f"music/jumps/jump{melodia[self.melodia_index]}.mp3")
-                #     # self.melodia_index += 1
-                #     if self.melodia_index == 4:
-                #         self.melodia_index = 0
             else:
                 jump_sound = pygame.mixer.Sound("music/jump_sound.mp3")
 
-            jump_volume = 0.25
+            jump_volume = 0.1
             jump_sound.set_volume(jump_volume)
             jump_sound.play()
 
