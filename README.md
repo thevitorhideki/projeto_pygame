@@ -61,3 +61,31 @@ python ./main.py
 [enzo]: https://github.com/enzojunq
 [pedro]: https://github.com/Phvr06
 [vitor]: https://github.com/thevitorhideki
+
+---
+## Créditos
+Lógica básica: https://www.youtube.com/watch?v=AY9MnQ4x3zk
+
+Fonte: 
+
+Background:
+
+Portal:
+
+Demônio: 
+
+Background inferno:
+
+Esqueleto:
+
+Olhos:
+
+Música Criança, Adulto e Idoso:
+
+Música Inferno:
+
+Som de Morte:
+
+---
+## Vídeo Gameplay
+
