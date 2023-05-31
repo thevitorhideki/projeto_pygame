@@ -103,10 +103,11 @@ class Player(pygame.sprite.Sprite):
         """
 
         if keys[pygame.K_SPACE] and not self.jump_bool:
+            num_jump = random.randint(1, 4)
             # Carrega o som do pulo
-            jump_sound = pygame.mixer.Sound("music/jump_sound.mp3")
+            jump_sound = pygame.mixer.Sound(f"music/jumps/jump{num_jump}.mp3")
             # Define o volume desejado (0.0 a 1.0)
-            jump_volume = 0.035
+            jump_volume = 0.25
             jump_sound.set_volume(jump_volume)
             # Reproduz o som do pulo
             jump_sound.play()
@@ -690,7 +691,7 @@ while True:
         # Reproduz a música de game over
         if bool_game_over_music==True:
             # Define o volume desejado (0.0 a 1.0)
-            game_over_music_volume = 0.085
+            game_over_music_volume = 0.07
             game_over_music.set_volume(game_over_music_volume)
             game_over_music.play()
         bool_game_over_music=False
