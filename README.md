@@ -22,6 +22,7 @@ Primeiro instale o [python][python_website] ou [anaconda][anaconda_website] e de
 
 ```bash
 pip install pygame
+pip install pandas
 ```
 
 ---
@@ -31,19 +32,19 @@ Após isso, basta clonar o repositório da maneira que preferir:
 Utilizando https:
 
 ```bash
-git clone https://github.com/thevitorhideki/primeiro_jogo.git
+git clone https://github.com/thevitorhideki/projeto_pygame.git
 ```
 
 Utilizando ssh-key:
 
 ```bash
-git clone git@github.com:thevitorhideki/primeiro_jogo.git
+git clone git@github.com:thevitorhideki/projeto_pygame.git
 ```
 
 Utilizando GitHub CLI:
 
 ```bash
-gh repo clone thevitorhideki/primeiro_jogo
+gh repo clone thevitorhideki/projeto_pygame
 ```
 
 ---
