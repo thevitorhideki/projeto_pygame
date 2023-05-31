@@ -80,11 +80,13 @@ Esqueleto: <https://snoblin.itch.io/pixel-rpg-skeleton-free?download>
 
 Olhos: <https://www.reddit.com/r/Terraria/comments/l52kpd/eye_of_cthulhu_pixel_art/>
 
-Música Criança, Adulto e Idoso:
+Música Criança, Adulto e Idoso: <https://www.youtube.com/watch?v=XIzCb7pGsFc>
 
 Música Inferno: <https://www.youtube.com/watch?v=cVukkhUI-xM>
 
-Som de Morte:
+Som Portal <https://www.youtube.com/watch?v=7cCaVy3_Nl0>
+
+Som de Morte: <https://www.youtube.com/watch?v=m9zhgDsd4P4>
 
 ---
 
