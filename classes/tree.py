@@ -1,15 +1,18 @@
 import pygame
 
 class Tree(pygame.sprite.Sprite):
-    """Classe que representa uma árvore no jogo."""
+    # Classe que representa uma árvore no jogo.
 
     def __init__(self, speed):
         """
-        Inicializa um objeto Tree.
+        Inicializa os atributos da árvore.
 
         Carrega a imagem da árvore, ajusta seu tamanho e define a posição inicial.
 
+        Argumentos:
+            speed: Velocidade da árvore.
         """
+
         super().__init__()
         tree = pygame.image.load('assets/tree.png').convert_alpha()
         tree = pygame.transform.scale(tree, (150, 150))
@@ -19,27 +22,28 @@ class Tree(pygame.sprite.Sprite):
     
     def destroy(self):
         """
-        Destroi a árvore se ela sair da tela.
-
+        Método que destrói a árvore se ela sair da tela.
         """
+
         if self.rect.x <= -300:
             self.kill()
 
     def movement(self):
         """
-        Move a árvore para a esquerda.
-
+        Método que move a árvore para a esquerda.
         """
+
         self.rect.x -= self.speed
 
     def update(self):
         """
         Atualiza a árvore.
 
-        Aplica o movimento da árvore e verifica se precisa ser destruída.
-
+        Chama os métodos movement() e destroy() atualizar a árvore.
         """
+
         self.movement()
         self.destroy()
 
+# Cria o grupo para a árvore
 tree = pygame.sprite.GroupSingle()

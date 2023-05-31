@@ -1,51 +1,51 @@
 import pygame
 
 class Rocks(pygame.sprite.Sprite):
-    """Classe que representa as rochas no jogo."""
+    # Classe que representa as pedras no jogo.
 
     def __init__(self, x_pos, y_pos, style, speed):
         """
-        Inicializa um objeto Rock.
+        Inicializa os atributos das pedras.
 
         Carrega a imagem da rocha e define as posições iniciais.
 
-        Args:
-            x_pos (int): Posição x inicial da rocha.
-            y_pos (int): Posição y inicial da rocha.
-            style (str): Caminho do arquivo de imagem da rocha.
-
+        Argumentos:
+            x_pos: Posição x inicial da rocha.
+            y_pos: Posição y inicial da rocha.
+            style: Caminho do arquivo de imagem da rocha.
+            speed: Velocidade da rocha.
         """
+
         super().__init__()
         rock = pygame.image.load(style).convert_alpha()
         self.image = rock
-        
-        # Posiciona a rocha na parte inferior esquerda com as coordenadas fornecidas
         self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
         self.speed = speed
     
     def destroy(self):
         """
-        Destroi a rocha se ela sair da tela.
-
+        Método que destrói a pedra se ela sair da tela.
         """
+
         if self.rect.x <= -300:
             self.kill()
 
     def movement(self):
         """
-        Move a rocha para a esquerda.
-
+        Método que move a pedra para a esquerda.
         """
+
         self.rect.x -= self.speed
 
     def update(self):
         """
-        Atualiza a rocha.
+        Atualiza a pedra.
 
-        Aplica o movimento da rocha e verifica se precisa ser destruída.
-
+        Chama os métodos movement() e destroy() atualizar a pedra.
         """
+
         self.movement()
         self.destroy()
         
+# Cria o grupo para as pedras
 rocks = pygame.sprite.Group()

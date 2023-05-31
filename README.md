@@ -12,7 +12,7 @@ Projeto de jogo desenvolvido com o [Pygame][pygame] na matéria de Design de Sof
 
 ## Conceito do jogo
 
-Este jogo conta a história de uma criança que encontra uma máquina do tempo e viaja por diferentes fases da vida: infância, idade adulta e velhice. Cada fase apresenta desafios únicos que a criança deve superar. No final, a criança se despede da vida e uma nova árvore cresce, simbolizando um novo começo. É uma jornada emocionante de crescimento, transformação e renovação.
+Este jogo conta a história de uma criança que corre e com o passar do tempo encontra portais que o levam a e viajar por diferentes fases da vida: infância, idade adulta e velhice. Após a velhice, se depara com um demônio que o leva ao inferno, onde segue pela eternidade.
 
 ---
 
@@ -48,7 +48,7 @@ gh repo clone thevitorhideki/primeiro_jogo
 
 ---
 
-Com o repositório clonado e o pygame instalado, agora é só entra na pasta e executar o jogo:
+Com o repositório clonado e o pygame instalado, agora é só entrar na pasta e executar o jogo:
 
 ```bash
 python ./main.py

@@ -1,15 +1,18 @@
 import pygame
 
 class Portal(pygame.sprite.Sprite):
-    """Classe que representa um portal no jogo."""
+    # Classe que representa um portal no jogo.
 
     def __init__(self, speed):
         """
-        Inicializa um objeto Portal.
+        Inicializa os atributos do portal.
 
-        Carrega as imagens dos portais e define as propriedades iniciais.
+        Carrega a imagem do portal, define sua posição inicial e define condições para a animação.
 
+        Argumentos:
+            speed: Velocidade do portal.
         """
+
         super().__init__()
         portal1 = pygame.image.load('assets/portal/portal1.png').convert_alpha()
         portal2 = pygame.image.load('assets/portal/portal2.png').convert_alpha()
@@ -17,22 +20,23 @@ class Portal(pygame.sprite.Sprite):
         self.portal_anim = [portal1, portal2]
         self.portal_index = 0
         self.image = self.portal_anim[self.portal_index]
-        self.rect = self.image.get_rect(bottomleft=(1280 * 3, 620))
+        self.rect = self.image.get_rect(bottomleft=(1280 * 8, 620))
         self.speed = speed
     
     def movement(self):
         """
-        Move o portal para a esquerda.
-
+        Método que move o portal para a esquerda.
         """
+
         self.rect.x -= self.speed
 
     def animation_state(self):
         """
-        Atualiza o estado da animação do portal.
+        Método que define o estado da animação do portal.
 
+        Aumenta o índice do sprite do jogador para animar o portal.
         """
-        # Se o portal não estiver no ar, reproduz a animação de caminhar
+
         self.portal_index += 0.1
         self.image = self.portal_anim[int(self.portal_index % len(self.portal_anim))]
 
@@ -40,10 +44,11 @@ class Portal(pygame.sprite.Sprite):
         """
         Atualiza o portal.
 
-        Atualiza o estado da animação e aplica o movimento.
-
+        Chama os métodos animation_state() e movement() para atualizar o portal.
         """
+
         self.animation_state()
         self.movement()
 
+# Cria o grupo para o portal
 portal = pygame.sprite.GroupSingle()

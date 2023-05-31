@@ -17,9 +17,10 @@ from utils.write_csv import save_score
 
 pygame.init()
 
-# Nome do jogador
+# Variável para armazenar o nome do jogador
 player_name = ''
 
+# Dicionário com assets diferentes para o jogador dependendo da fase
 player_sprites = {
     'kid': ['assets/kid/player1.png', 'assets/kid/player2.png'],
     'man': ['assets/man/player1.png', 'assets/man/player2.png'],
@@ -27,22 +28,22 @@ player_sprites = {
     'skeleton': ['assets/skeleton/skeleton1.png', 'assets/skeleton/skeleton2.png'],
 }
 
-################# CLASS PLAYER #################
+################# CLASSE JOGADOR #################
 
 class Player(pygame.sprite.Sprite):
-    """
-    Classe que representa o jogador.
-    """
+    # Classe que representa o jogador.
+    
     def __init__(self, player_type):
         """
         Inicializa os atributos do jogador.
 
-        Carrega os sprites do jogador, define o sprite atual para a animação, posiciona o jogador e
+        Carrega os sprites do jogador, define condições para a animação, posiciona o jogador e
         inicializa os atributos de gravidade, velocidade vertical e pulo.
 
         Argumentos:
             player_type: Lista contendo assets diferentes do jogador para cada fase do jogo.
         """
+
         super().__init__()
         player_1 = pygame.image.load(player_type[0]).convert_alpha()
         player_2 = pygame.image.load(player_type[1]).convert_alpha()
@@ -66,6 +67,7 @@ class Player(pygame.sprite.Sprite):
         Retornos:
             platform ou False: A plataforma com a qual o jogador está colidindo ou False se não houver colisão.
         """
+
         platforms_hit = pygame.sprite.spritecollide(self, platforms, False)
         for platform in platforms_hit:
             if self.rect.colliderect(platform.rect):
@@ -82,6 +84,7 @@ class Player(pygame.sprite.Sprite):
         Retornos:
             booleano: True se o jogador estiver colidindo com o solo ou False se não houver colisão.
         """
+
         for g in ground:
             if self.rect.colliderect(g.rect):
                 return True
@@ -95,6 +98,7 @@ class Player(pygame.sprite.Sprite):
         Se ambas as condições forem verdadeiras, aplica a velocidade vertical negativa
         para subir o jogador e define o estado de pulo como True.
         """
+
         if keys[pygame.K_SPACE] and self.jump_bool == False:
             self.speedy -= 20
             self.jump_bool = True
@@ -108,6 +112,7 @@ class Player(pygame.sprite.Sprite):
         Em seguida, atualiza a posição vertical do jogador com base na velocidade vertical e gravidade,
         leva em conta também a colisão com o chão e com as plataformas.
         """
+
         if keys[pygame.K_SPACE] and self.speedy >= 0:
             self.gravity = 0.1
         else:
@@ -138,6 +143,7 @@ class Player(pygame.sprite.Sprite):
         Se a velocidade em y do jogador for nula, ou seja, estiver no chão ou em uma plataforma,
         aumenta o índice do sprite do jogador para animar a caminhada.
         """
+
         if self.speedy == 0:
             self.player_index += 0.1
             self.image = self.player_walk[int(self.player_index % len(self.player_walk))]
@@ -149,6 +155,7 @@ class Player(pygame.sprite.Sprite):
         Retorna:
             booleano: True se o jogador está colidindo com uma pedra, nada caso contrário.
         """
+
         if pygame.sprite.spritecollide(player.sprite, rocks, False):
             return True
         
@@ -159,6 +166,7 @@ class Player(pygame.sprite.Sprite):
         Retorna:
             booleano: True se o jogador está colidindo com um portal, nada caso contrário.
         """
+
         if pygame.sprite.spritecollide(player.sprite, portal, False):
             return True
         
@@ -169,6 +177,7 @@ class Player(pygame.sprite.Sprite):
         Retorna:
             booleano: True se o jogador está colidindo com o domônio, nada caso contrário.
         """
+
         if pygame.sprite.spritecollide(player.sprite, demon, False):
             return True
 
@@ -178,11 +187,12 @@ class Player(pygame.sprite.Sprite):
 
         Chama os métodos apply_gravity(), jump() e animation_state() para atualizar o jogador.
         """
+
         self.apply_gravity()
         self.jump()
         self.animation_state()
 
-################# SETTINGS #################
+################# CONFIGURAÇÕES #################
 
 # Configurações da tela
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -200,7 +210,7 @@ mixer.init()
 mixer.music.load('music/music.mp3')
 # Define um volume
 mixer.music.set_volume(0.4)
-# Reproduz em loop
+# Reproduz em loop a música
 mixer.music.play(-1)
 
 next_track = True
@@ -210,6 +220,7 @@ Grupos de jogador, árvore, chão, portal e demônio.
 
 Estilos com os assets que serão utilizados em cada fase diferente do jogo
 """
+
 player = pygame.sprite.GroupSingle()
 player.add(Player(player_sprites['kid']))
 
@@ -233,16 +244,6 @@ ground.add(Ground(WIDTH, ground_styles['kid'], speed['kid']))
 
 portal.add(Portal(speed['kid']))
 
-game_state = {
-    'playing_kid': False,
-    'playing_man': False,
-    'playing_oldman': False, 
-    'hell': False,
-    'game_over': False,
-    'menu': False, 
-    'player_name': True
-}
-
 background_styles = {
     'kid': 'assets/morning/sky_morning.png',
     'man': 'assets/afternoon/sky_afternoon.png',
@@ -260,6 +261,17 @@ platform_style = {
     'man': 'assets/afternoon/platform_afternoon.png',
     'oldman': 'assets/night/platform_night.png',
     'hell': 'assets/hell/hell_platform.png',
+}
+
+# Dicionário com os diferentes estados que o jogo pode ter
+game_state = {
+    'playing_kid': False,
+    'playing_man': False,
+    'playing_oldman': False, 
+    'hell': False,
+    'game_over': False,
+    'menu': False, 
+    'player_name': True
 }
 
 
@@ -283,11 +295,11 @@ def transition(screen):
         screen: Tela do jogo na qual a troca será feita.
     """
     fade_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    for alpha in range(0, 255, 5):  # Decrease alpha value
-        fade_surface.fill((0, 0, 0, alpha))  # Fill with black and alpha value
+    for alpha in range(0, 255, 5):
+        fade_surface.fill((0, 0, 0, alpha))
         screen.blit(fade_surface, (0, 0))
         pygame.display.update()
-        pygame.time.delay(30)  # Delay for smoother effect
+        pygame.time.delay(30)
         
 ################# GAME LOOP #################
 while True:
@@ -303,7 +315,9 @@ while True:
             pygame.quit()
             exit()
         """
-        Gera plataformas
+        Gera plataformas no jogo a cada intervalo do timer, com posições aleatórias dentro de um intervalo em y.
+        Em cima dessas plataformas, posiciona pedras em algum lugar.
+        Os assets das plataformas e das pedras dependem da fase do jogo.
         """
         if event.type == platform_timer and not (game_state['menu'] or game_state['player_name']):
             x_pos = random.randint(WIDTH, WIDTH + 200)
@@ -325,7 +339,10 @@ while True:
                 platforms.add(Platforms(WIDTH, y_pos, platform_style['oldman'], speed['oldman']))
                 platforms.add(Platforms(WIDTH + 128, y_pos, platform_style['oldman'], speed['oldman']))
             
-        # Rock timer
+        """
+        Gera pedras no chão do jogo a cada intervalo do timer.
+        Os assets das pedras dependem da fase do jogo.
+        """
         if event.type == rocks_timer and not (game_state['menu'] or game_state['player_name']):
             if game_state['hell']:
                 rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['hell'], speed['hell']))
@@ -337,34 +354,39 @@ while True:
                 rocks.add(Rocks(random.randint(WIDTH, WIDTH + 200), 620, rock_styles['normal'], speed['oldman']))
                 
                 
-        # Get the input from the player and save it in the variable player_name
+        """
+        Coleta o input de nome do jogador, armazena em uma variável.
+        Muda o estado do jogo para o menu inicial quando o jogador enviar seu nome.
+        """
         if event.type == pygame.KEYDOWN and game_state['player_name']:
             if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                # If the player doesn't type anything, the name will be qwerty + bug prevention
+                # Se o jogador não digitar nada, o nome padrão é "qwerty".
                 if player_name == '':
                     player_name = 'qwerty'
                 game_state['player_name'] = False
                 game_state['menu'] = True
             elif event.key == pygame.K_BACKSPACE:
-                # If the player press backspace, delete the last character from the player_name variable
                 player_name = player_name[:-1]
             else:
                 player_name += event.unicode
 
     if game_state['player_name']:
-        # Draw the background
+        """
+        Estado do jogo no qual o jogador digita seu nome.
+        Carrega os assets e textos necessários para essa tela.
+        Mostra esses assets e textos na tela.
+        """
+
         background = pygame.image.load(background_styles['kid']).convert_alpha()
         background_rect = background.get_rect(bottomleft=(0, 800))
         screen.blit(background, background_rect)
         background_2 = pygame.image.load(background_styles['kid']).convert_alpha()
         background_2_rect = background.get_rect(bottomleft=(3840, 800))
         
-        # Draw the game name on the screen
         game_name = font_blox.render("EXISTENTIAL CRISIS", True, (255, 255, 255))
         game_name_rect = game_name.get_rect(center=((WIDTH / 2), HEIGHT / 2 - 250))
         screen.blit(game_name, game_name_rect)
 
-        # Load the player and tree images and draw them on the screen
         player_stand = pygame.image.load('assets/kid/player_stand.png').convert_alpha()
         player_stand_rect = player_stand.get_rect(midbottom=(100, 620))
         screen.blit(player_stand, player_stand_rect)
@@ -374,57 +396,65 @@ while True:
         tree_stand_rect = tree_stand.get_rect(bottomleft=(0, 620))
         screen.blit(tree_stand, tree_stand_rect)
 
-        # Draw the ground
         ground.draw(screen)
         
-        # Draw the text box
         name_text = font_pixel.render(f"Enter your name: {player_name}", True, (255, 255, 255))
         name_text_rect = name_text.get_rect(center=(WIDTH//2, HEIGHT//2))
         screen.blit(name_text, name_text_rect)
 
+
     elif game_state['menu']:
-        # Clear the rocks and platforms groups to avoid bugs
+        """
+        Estado do jogo de menu que espera que o jogador aperte ESPAÇO para iniciar o jogo,
+        caso sim, as variáveis de estado do jogo são alteradas.
+        Carrega os assets e textos necessários para essa tela.
+        Mostra esses assets e textos na tela.
+        """
+
+        # Limpa os grupos de pedras e plataformas para evitar bugs
         rocks.empty()
         platforms.empty()
 
-        # Draw the stuff on the screen
         screen.blit(background, background_rect)
         screen.blit(player_stand, player_stand_rect)
         screen.blit(tree_stand, tree_stand_rect)
         screen.blit(game_name, game_name_rect)
         ground.draw(screen)
 
-        # Draw the start text on the screen
         start_text = font_pixel.render(f"Press SPACE to START", True, (255, 255, 255))
         start_text_rect = start_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 320))
         screen.blit(start_text, start_text_rect)
 
-        # Draw the leaderboard on the screen
         leaderboard_text = font_pixel.render(f"Leaderboard:", True, (255, 255, 255))
         leaderboard_rect = leaderboard_text.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 125))
         screen.blit(leaderboard_text, leaderboard_rect)
 
-        # Logic to get the top 3 scores their names to draw on the screen
+        # Loop para mostrar os 3 melhores scores do jogo na tela
         for i in range(3):
             leaderboard = font_pixel.render(
                 f"{i+1}: {scoreboard['Name'][i]} - {scoreboard['Score'][i]}pts", True, (255, 255, 255))
             leaderboard_rect = leaderboard.get_rect(topleft=((WIDTH / 2 + 200), HEIGHT / 2 - 75 + i*50))
             screen.blit(leaderboard, leaderboard_rect)
 
-        # Check if the player clicks the space key
         if keys[pygame.K_SPACE]:
-            # If he does, start the game
             game_state['playing_kid'] = True
             game_state['menu'] = False
 
     elif game_state['playing_kid']:
-        # Draw the background, score, tree, player, platforms, rocks and ground on the screen
+        """
+        Estado do jogo da fase da criança.
+        Desenha e atualiza as classes de árvore, jogador, pedras, plataformas, chão e portal na tela.
+        Caso o jogador colida com alguma pedra, o jogo acaba e o estado do jogo é alterado para game over.
+        Caso o jogador colida com o portal, o estado do jogo é alterado para a fase do adulto,
+        é realizada a transição, os assets são ajustados e os grupos são esvaziados e depois repovoados para a fase do adulto.
+        """
+
         screen.blit(background, background_rect)
         screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
         tree.draw(screen)
         tree.update()
-        # Draw the game name on the screen only if it is on the screen
+
         if game_name_rect.right >= 0:
             screen.blit(game_name, game_name_rect)
         player.draw(screen)
@@ -438,21 +468,23 @@ while True:
         portal.draw(screen)
         portal.update()
 
+        # Lógica para que o fundo seja infinito
         if background_2_rect.topright[0] == WIDTH:
             background_rect.x = WIDTH
         elif background_rect.topright[0] == WIDTH:
             background_2_rect.x = WIDTH
 
-        # Move the sky background and the game name to the left
+        # Movimentação do cenário
         background_rect.x -= 1
         background_2_rect.x -= 1
         game_name_rect.x -= 1
         
-        # Check if the player collides with a rock or the background ends, if he does, stop the game
+        # Verifica colisão com a pedra
         if Player.collision_player_rocks():
             game_state['playing_kid'] = False
             game_state['game_over'] = True
         
+        # Verifica colisão com o portal
         if Player.collision_player_portal():
             transition(screen)
             game_state['playing_kid'] = False
@@ -472,12 +504,20 @@ while True:
             ground.add(Ground(WIDTH, ground_styles['man'], speed['man']))
             portal.add(Portal(speed['man']))
 
-        # Update the score
+        # Atualiza a pontuação
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
-    # If the game is not running, show the game over screen
+    
 
     elif game_state['playing_man']:
+        """
+        Estado do jogo da fase do adulto.
+        Desenha e atualiza as classes de jogador, pedras, plataformas, chão e portal na tela.
+        Caso o jogador colida com alguma pedra, o jogo acaba e o estado do jogo é alterado para game over.
+        Caso o jogador colida com o portal, o estado do jogo é alterado para a fase do idoso,
+        é realizada a transição, os assets são ajustados e os grupos são esvaziados e depois repovoados para a fase do idoso.
+        """
+
         screen.blit(background, background_rect)
         screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
@@ -493,18 +533,22 @@ while True:
         portal.draw(screen)
         portal.update()
 
+        # Lógica para que o fundo seja infinito
         if background_2_rect.topright[0] == WIDTH:
             background_rect.x = WIDTH
         elif background_rect.topright[0] == WIDTH:
             background_2_rect.x = WIDTH
 
+        # Movimentação do cenário
         background_rect.x -= 1
         background_2_rect.x -= 1
 
+        # Verifica colisão com a pedra
         if Player.collision_player_rocks():
             game_state['playing_man'] = False
             game_state['game_over'] = True
 
+        # Verifica colisão com o portal
         if Player.collision_player_portal():
             transition(screen)
             game_state['playing_man'] = False
@@ -524,11 +568,21 @@ while True:
             ground.add(Ground(0, ground_styles['oldman'], speed['oldman']))
             ground.add(Ground(WIDTH, ground_styles['oldman'],  speed['oldman']))
 
+        # Atualiza a pontuação
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
 
     elif game_state['playing_oldman']:
+        """
+        Estado do jogo da fase do idoso.
+        Desenha e atualiza as classes de jogador, pedras, plataformas, chão e demônio na tela.
+        Caso o jogador colida com alguma pedra, o jogo acaba e o estado do jogo é alterado para game over.
+        Caso o jogador colida com o demônio, o estado do jogo é alterado para a fase do inferno,
+        é realizada a transição, há troca de música, os assets são ajustados
+        e os grupos são esvaziados e depois repovoados para a fase do inferno.
+        """
+
         screen.blit(background, background_rect)
         screen.blit(background_2, background_2_rect)
         screen.blit(score_text, score_rect)
@@ -544,18 +598,22 @@ while True:
         demon.draw(screen)
         demon.update()
 
+        # Lógica para que o fundo seja infinito
         if background_2_rect.topright[0] == WIDTH:
             background_rect.x = WIDTH
         elif background_rect.topright[0] == WIDTH:
             background_2_rect.x = WIDTH
 
+        # Movimentação do cenário
         background_rect.x -= 1
         background_2_rect.x -= 1
-
+        
+        # Verifica colisão com a pedra
         if Player.collision_player_rocks():
             game_state['playing_oldman'] = False
             game_state['game_over'] = True
 
+        # Verifica colisão com o demônio
         if Player.collision_player_demon():
             transition(screen)
             game_state['playing_oldman'] = False
@@ -578,10 +636,20 @@ while True:
             mixer.music.load('music/music_hell.mp3')
             mixer.music.play()
 
+        # Atualiza a pontuação
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
-    elif game_state['hell']:        
+    elif game_state['hell']:
+        """
+        Estado do jogo da fase do inferno.
+        Alguns assets não são equivalentes aos das outras fases, como a troca da pedra por um olho,
+        mas o funcionamento é o mesmo, por isso a classe e a lógica são mantidas, apenas o asset é alterado.
+        Desenha e atualiza as classes de jogador, pedras, plataformas e chão na tela.
+        Caso o jogador colida com alguma pedra, o jogo acaba e o estado do jogo é alterado para game over.
+        Nesse caso, o jogo só termina quando o jogador perder.
+        """
+
         screen.blit(background, background_rect)
         screen.blit(background_2, background_2_rect)
         
@@ -596,23 +664,35 @@ while True:
         ground.draw(screen)
         ground.update()
 
+        # Lógica para que o fundo seja infinito
         if background_2_rect.topright[0] <= 0:
             background_2_rect.x = 3840
         elif background_rect.topright[0] <= 0:
             background_rect.x = 3840
-            
+        
+        # Movimentação do cenário
         background_rect.x -= 1
         background_2_rect.x -= 1
 
+        # Verifica colisão com a pedra
         if Player.collision_player_rocks():
             game_state['hell'] = False
             game_state['game_over'] = True
 
+        # Atualiza a pontuação
         score += 0.2
         score_text = font_pixel.render("Score: " + str(floor(score)), True, (255, 255, 255))
 
     elif game_state['game_over']:
-        # Clear all the sprites
+        """
+        Estado do jogo de game over que espera que mostra a pontução final do jogador, sua pontuação máxima
+        e a maior pontuação obtida por todos os jogadores.
+        Espera que o jogador aperte R para reiniciar o jogo ou ESC para sair e voltar a tela de digitar seu nome.
+        Os grupos são esvaziados e depois repovoados caso o jogo seja reiniciado.
+        Carrega os assets e textos necessários para essa tela.
+        Mostra esses assets e textos na tela.
+        """
+
         player.empty()
         rocks.empty()
         platforms.empty()
@@ -620,21 +700,18 @@ while True:
         portal.empty()
         demon.empty()
 
-        # Fill the screen with a color
         screen.fill((94, 129, 162))
         background_rect.x = 0
         game_name_rect.center = (WIDTH / 2, HEIGHT / 2 - 250)
 
-        # Save the best score in a csv
+        # Salva a pontuação no scoreboard
         save_score(player_name, score, scoreboard)
 
-        # Show the game over text and the score
         game_over_text = font_pixel.render("Game Over", True, (255, 255, 255))
         game_over_rect = game_over_text.get_rect(center=(WIDTH / 2, HEIGHT / 2))
         screen.blit(game_over_text, game_over_rect)
         screen.blit(score_text, score_rect)
 
-        # Best Score
         best_score = scoreboard.loc[scoreboard['Name'] == player_name, 'Score']
         your_best_score = font_pixel.render("Your Best Score: " + str(floor(best_score)), True, (255, 255, 255))
         best_score_rect = your_best_score.get_rect(center=(WIDTH / 2, HEIGHT / 2 + 50))
@@ -648,14 +725,13 @@ while True:
         quit_rect = quit_text.get_rect(center=(WIDTH / 2 + 200, HEIGHT / 2 + 150))
         screen.blit(quit_text, quit_rect)
 
-        # Overall Best Score
         overall_best_score = scoreboard['Score'].max()
         overall_best_score_text = font_pixel.render(
             "Overall Best Score: " + str(floor(overall_best_score)), True, (255, 255, 255))
         overall_best_score_rect = overall_best_score_text.get_rect(center=((WIDTH / 2), HEIGHT / 2 + 250))
         screen.blit(overall_best_score_text, overall_best_score_rect)
 
-        # If the player press space, restart the game
+        # Se o jogador apertar R, o jogo é reiniciado
         if keys[pygame.K_r]:
             game_state['menu'] = True
             game_state['game_over'] = False
@@ -671,6 +747,8 @@ while True:
             tree.add(Tree(speed['kid']))
             mixer.music.load('music/music.mp3')
             mixer.music.play(-1)
+
+        # Se o jogador apertar ESC, o jogo volta para a tela de digitar seu nome
         elif keys[pygame.K_ESCAPE]:
             game_state['player_name'] = True
             game_state['game_over'] = False
