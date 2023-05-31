@@ -186,6 +186,10 @@ class Player(pygame.sprite.Sprite):
         """
 
         if pygame.sprite.spritecollide(player.sprite, portal, False):
+            portal_sound = pygame.mixer.Sound("music/portal.mp3")
+            portal_volume = 0.3
+            portal_sound.set_volume(portal_volume)
+            portal_sound.play()
             return True
         
     def collision_player_demon():
@@ -197,6 +201,10 @@ class Player(pygame.sprite.Sprite):
         """
 
         if pygame.sprite.spritecollide(player.sprite, demon, False):
+            portal_sound = pygame.mixer.Sound("music/portal.mp3")
+            portal_volume = 0.3
+            portal_sound.set_volume(portal_volume)
+            portal_sound.play()
             return True
 
     def update(self):
