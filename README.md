@@ -32,6 +32,7 @@ Após isso, basta clonar o repositório da maneira que preferir:
 Utilizando https:
 
 ```bash
+
 git clone https://github.com/thevitorhideki/projeto_pygame.git
 ```
 
